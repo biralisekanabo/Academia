@@ -27,6 +27,9 @@ drop policy if exists "openlu_soumissions_modification_soi" on storage.objects;
 drop policy if exists "openlu_soumissions_suppression_soi" on storage.objects;
 
 -- Tables (cascade : index, contraintes, triggers et policies associees)
+drop table if exists public.openlu_abonnements_push cascade;
+drop table if exists public.openlu_notifications cascade;
+drop table if exists public.openlu_transactions cascade;
 drop table if exists public.openlu_soumissions cascade;
 drop table if exists public.openlu_devoirs cascade;
 drop table if exists public.openlu_supports_cours cascade;
@@ -56,6 +59,9 @@ drop function if exists public.openlu_gerer_nouveau_utilisateur();
 drop function if exists public.openlu_surveiller_mise_a_jour();
 
 -- Types
+drop type if exists public.openlu_type_notification cascade;
+drop type if exists public.openlu_type_transaction cascade;
+drop type if exists public.openlu_type_categorie_transaction cascade;
 drop type if exists public.openlu_type_statut_soumission cascade;
 drop type if exists public.openlu_type_statut_paiement cascade;
 drop type if exists public.openlu_type_statut cascade;
@@ -390,18 +396,54 @@ create index if not exists openlu_etudiants_statut_idx on public.openlu_etudiant
 
 -- --- Cours -----------------------------------------------------
 create table if not exists public.openlu_cours (
-  id            uuid primary key default gen_random_uuid(),
-  code          text not null unique,
-  titre         text not null,
-  description   text,
-  credits       numeric not null default 6 check (credits > 0),
-  semestre      int not null default 1 check (semestre between 1 and 8),
-  enseignant_id uuid references public.openlu_profils (id) on delete set null,
-  cree_le       timestamptz not null default now(),
-  mis_a_jour    timestamptz not null default now()
+  id                 uuid primary key default gen_random_uuid(),
+  code               text not null unique,
+  titre              text not null,
+  description        text,
+  credits            numeric not null default 6 check (credits > 0),
+  semestre           int not null default 1 check (semestre between 1 and 8),
+  enseignant_id      uuid references public.openlu_profils (id) on delete set null,
+  jeton_inscription  text not null unique default replace(gen_random_uuid()::text, '-', ''),
+  inscription_ouverte boolean not null default true,
+  cree_le            timestamptz not null default now(),
+  mis_a_jour         timestamptz not null default now()
 );
 
 comment on table public.openlu_cours is 'Catalogue des cours de l université.';
+comment on column public.openlu_cours.jeton_inscription is 'Jeton public partagé pour l inscription autonome via un lien.';
+comment on column public.openlu_cours.inscription_ouverte is 'Autorise l inscription autonome par lien tant que vrai.';
+
+-- --- Fonction publique : cours par jeton d inscription -------------------
+-- Lecture par un visiteur non authentifié (page publique /rejoindre/[jeton]).
+create or replace function public.openlu_cours_par_jeton(p_jeton text)
+returns table (
+  id          uuid,
+  code        text,
+  titre       text,
+  description text,
+  credits     numeric,
+  semestre    int,
+  enseignant  text,
+  ouverte     boolean
+)
+language sql stable security definer set search_path = public
+as $$
+  select
+    c.id,
+    c.code,
+    c.titre,
+    c.description,
+    c.credits,
+    c.semestre,
+    trim(coalesce(p.prenom, '') || ' ' || coalesce(p.nom, '')),
+    c.inscription_ouverte
+  from public.openlu_cours c
+  left join public.openlu_profils p on p.id = c.enseignant_id
+  where c.jeton_inscription = p_jeton
+  limit 1;
+$$;
+
+grant execute on function public.openlu_cours_par_jeton(text) to anon, authenticated;
 
 -- --- Inscriptions aux cours -------------------------------------
 drop type if exists openlu_type_inscription_statut cascade;
@@ -432,6 +474,18 @@ create table if not exists public.openlu_seances (
 );
 
 comment on table public.openlu_seances is 'Créneaux hebdomadaires de l emploi du temps.';
+
+-- --- Messages de classe (fil de communication enseignant -> étudiants) ---
+create table if not exists public.openlu_messages_cours (
+  id         uuid primary key default gen_random_uuid(),
+  cours_id   uuid not null references public.openlu_cours (id) on delete cascade,
+  auteur_id  uuid references public.openlu_profils (id) on delete set null,
+  contenu    text not null,
+  cree_le    timestamptz not null default now(),
+  constraint openlu_messages_cours_contenu check (char_length(contenu) between 1 and 8000)
+);
+
+comment on table public.openlu_messages_cours is 'Fil de messages publiés par l enseignant d un cours.';
 
 -- --- Triggers mis_a_jour -------------------------------------------
 drop trigger if exists openlu_cours_maj on public.openlu_cours;
@@ -636,7 +690,7 @@ create table if not exists public.openlu_frais_scolarite (
   niveau               openlu_type_niveau not null default 'L1',
   libelle              text not null,
   montant              numeric not null check (montant >= 0),
-  devise               text not null default 'FCFA',
+  devise               text not null default 'CDF',
   annee_universitaire  text not null default '2026-2027',
   cree_le              timestamptz not null default now(),
   mis_a_jour           timestamptz not null default now(),
@@ -1096,5 +1150,240 @@ insert into public.openlu_cours (code, titre, description, credits, semestre) va
   ('WEB1', 'Développement Web', 'HTML/CSS, JavaScript et frameworks modernes.', 6, 2),
   ('RES1', 'Réseaux de Communication', 'Architecture OSI/TCP/IP, routage.', 6, 2)
 on conflict (code) do nothing;
+
+-- ============================================================
+-- OPENLU · 0008 - Tableau d'annonces public et pièces jointes
+-- ============================================================
+
+create table if not exists public.openlu_annonces (
+  id           uuid primary key default gen_random_uuid(),
+  titre        text not null,
+  contenu      text not null,
+  publiee      boolean not null default false,
+  publiee_le   timestamptz,
+  auteur_id    uuid references public.openlu_profils (id) on delete set null,
+  cree_le      timestamptz not null default now(),
+  mis_a_jour   timestamptz not null default now(),
+  constraint openlu_annonces_titre_longueur check (char_length(titre) between 3 and 160),
+  constraint openlu_annonces_contenu_longueur check (char_length(contenu) between 3 and 12000)
+);
+
+create table if not exists public.openlu_annonces_fichiers (
+  id             uuid primary key default gen_random_uuid(),
+  annonce_id     uuid not null references public.openlu_annonces (id) on delete cascade,
+  nom            text not null,
+  chemin         text not null unique,
+  type_mime      text not null,
+  taille_octets  bigint not null,
+  cree_le        timestamptz not null default now(),
+  constraint openlu_annonces_fichiers_taille check (taille_octets between 1 and 4194304)
+);
+
+create index if not exists openlu_annonces_publication_idx
+  on public.openlu_annonces (publiee, publiee_le desc, cree_le desc);
+create index if not exists openlu_annonces_fichiers_annonce_idx
+  on public.openlu_annonces_fichiers (annonce_id);
+
+drop trigger if exists openlu_annonces_maj on public.openlu_annonces;
+create trigger openlu_annonces_maj before update on public.openlu_annonces
+  for each row execute function public.openlu_surveiller_mise_a_jour();
+
+alter table public.openlu_annonces enable row level security;
+alter table public.openlu_annonces_fichiers enable row level security;
+
+drop policy if exists "openlu_annonces_lecture_publique" on public.openlu_annonces;
+create policy "openlu_annonces_lecture_publique" on public.openlu_annonces
+  for select to anon, authenticated
+  using (publiee = true);
+
+drop policy if exists "openlu_annonces_gestion_admin" on public.openlu_annonces;
+create policy "openlu_annonces_gestion_admin" on public.openlu_annonces
+  for all to authenticated
+  using (public.openlu_est_administrateur())
+  with check (public.openlu_est_administrateur());
+
+drop policy if exists "openlu_annonces_fichiers_lecture_publication" on public.openlu_annonces_fichiers;
+create policy "openlu_annonces_fichiers_lecture_publication" on public.openlu_annonces_fichiers
+  for select to anon, authenticated
+  using (
+    exists (
+      select 1 from public.openlu_annonces a
+      where a.id = annonce_id and a.publiee = true
+    )
+  );
+
+drop policy if exists "openlu_annonces_fichiers_gestion_admin" on public.openlu_annonces_fichiers;
+create policy "openlu_annonces_fichiers_gestion_admin" on public.openlu_annonces_fichiers
+  for all to authenticated
+  using (public.openlu_est_administrateur())
+  with check (public.openlu_est_administrateur());
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'openlu_annonces',
+  'openlu_annonces',
+  false,
+  4194304,
+  array[
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+  ]
+)
+on conflict (id) do update
+set public = false,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+-- 
+-- ### 0009_notifications_tresorerie.sql
+-- 
+-- ============================================================
+-- OPENLU · 0009 - Notifications temps réel & trésorerie
+-- ============================================================
+
+-- --- Notifications ------------------------------------------
+drop type if exists openlu_type_notification cascade;
+create type openlu_type_notification as enum (
+  'info', 'succes', 'alerte', 'paiement', 'note', 'annonce'
+);
+
+create table if not exists public.openlu_notifications (
+  id              uuid primary key default gen_random_uuid(),
+  destinataire_id uuid not null references public.openlu_profils (id) on delete cascade,
+  titre           text not null,
+  message         text,
+  type            openlu_type_notification not null default 'info',
+  lien            text,
+  lue             boolean not null default false,
+  cree_le         timestamptz not null default now()
+);
+
+comment on table public.openlu_notifications is 'Notifications personnelles poussées en temps réel.';
+
+create index if not exists openlu_notifications_destinataire_idx
+  on public.openlu_notifications (destinataire_id, lue, cree_le desc);
+
+alter table public.openlu_notifications enable row level security;
+
+create policy "openlu_notifications_lecture_soi" on public.openlu_notifications
+  for select using (destinataire_id = auth.uid());
+
+create policy "openlu_notifications_modification_soi" on public.openlu_notifications
+  for update using (destinataire_id = auth.uid())
+  with check (destinataire_id = auth.uid());
+
+create policy "openlu_notifications_suppression_soi" on public.openlu_notifications
+  for delete using (destinataire_id = auth.uid());
+
+create policy "openlu_notifications_creation_administrative" on public.openlu_notifications
+  for insert with check (public.openlu_est_administratif() or public.openlu_est_enseignant());
+
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'openlu_notifications'
+  ) then
+    alter publication supabase_realtime add table public.openlu_notifications;
+  end if;
+end
+$$;
+
+-- --- Trésorerie : entrées et sorties ------------------------
+drop type if exists openlu_type_transaction cascade;
+create type openlu_type_transaction as enum ('entree', 'sortie');
+
+drop type if exists openlu_type_categorie_transaction cascade;
+create type openlu_type_categorie_transaction as enum (
+  'scolarite',
+  'salaire',
+  'fourniture',
+  'loyer',
+  'service',
+  'subvention',
+  'don',
+  'maintenance',
+  'autre'
+);
+
+create table if not exists public.openlu_transactions (
+  id                uuid primary key default gen_random_uuid(),
+  type              openlu_type_transaction not null,
+  categorie         openlu_type_categorie_transaction not null default 'autre',
+  libelle           text not null,
+  montant           numeric not null check (montant > 0),
+  devise               text not null default 'CDF',
+  methode           openlu_type_methode_paiement not null default 'especes',
+  reference         text not null unique default ('TRX-' || upper(substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))),
+  date_transaction  date not null default current_date,
+  description       text,
+  source_id         uuid,
+  enregistre_par    uuid references public.openlu_profils (id),
+  cree_le           timestamptz not null default now(),
+  mis_a_jour        timestamptz not null default now()
+);
+
+comment on table public.openlu_transactions is 'Journal de caisse : entrées et sorties de l''université.';
+
+drop trigger if exists openlu_transactions_maj on public.openlu_transactions;
+create trigger openlu_transactions_maj before update on public.openlu_transactions
+  for each row execute function public.openlu_surveiller_mise_a_jour();
+
+create index if not exists openlu_transactions_type_idx on public.openlu_transactions (type);
+create index if not exists openlu_transactions_date_idx on public.openlu_transactions (date_transaction desc);
+create index if not exists openlu_transactions_categorie_idx on public.openlu_transactions (categorie);
+
+alter table public.openlu_transactions enable row level security;
+
+create policy "openlu_transactions_lecture_gestion" on public.openlu_transactions
+  for select using (public.openlu_est_administratif());
+
+create policy "openlu_transactions_gestion_finance" on public.openlu_transactions
+  for all using (public.openlu_est_finance() or public.openlu_est_administrateur())
+  with check (public.openlu_est_finance() or public.openlu_est_administrateur());
+
+-- 
+-- ### 0010_abonnements_push.sql
+-- 
+-- ============================================================
+-- OPENLU · 0010 - Abonnements Web Push (notifications app fermée)
+-- ============================================================
+
+create table if not exists public.openlu_abonnements_push (
+  id             uuid primary key default gen_random_uuid(),
+  utilisateur_id uuid not null references public.openlu_profils (id) on delete cascade,
+  endpoint       text not null unique,
+  p256dh         text not null,
+  auth           text not null,
+  user_agent     text,
+  cree_le        timestamptz not null default now()
+);
+
+comment on table public.openlu_abonnements_push is
+  'Abonnements Web Push par appareil (mobile / bureau) pour recevoir les notifications app fermée.';
+
+create index if not exists openlu_abonnements_push_utilisateur_idx
+  on public.openlu_abonnements_push (utilisateur_id);
+
+alter table public.openlu_abonnements_push enable row level security;
+
+create policy "openlu_abonnements_lecture_soi" on public.openlu_abonnements_push
+  for select using (utilisateur_id = auth.uid());
+
+create policy "openlu_abonnements_creation_soi" on public.openlu_abonnements_push
+  for insert with check (utilisateur_id = auth.uid());
+
+create policy "openlu_abonnements_modification_soi" on public.openlu_abonnements_push
+  for update using (utilisateur_id = auth.uid())
+  with check (utilisateur_id = auth.uid());
+
+create policy "openlu_abonnements_suppression_soi" on public.openlu_abonnements_push
+  for delete using (utilisateur_id = auth.uid());
 
 commit;

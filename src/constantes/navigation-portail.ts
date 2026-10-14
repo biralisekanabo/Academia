@@ -1,6 +1,9 @@
 import {
+  Bell,
   BookOpen,
   ClipboardCheck,
+  ClipboardList,
+  GraduationCap,
   Home,
   Landmark,
   LayoutDashboard,
@@ -24,6 +27,12 @@ const ACCUEIL: ElementPortail = {
   icone: Home,
 };
 
+const NOTIFICATIONS: ElementPortail = {
+  titreCle: "navigation.notifications",
+  lien: "/notifications",
+  icone: Bell,
+};
+
 export const navigationParRole: Record<TypeRole, ElementPortail[]> = {
   etudiant: [
     ACCUEIL,
@@ -31,6 +40,7 @@ export const navigationParRole: Record<TypeRole, ElementPortail[]> = {
     { titreCle: "navigation.cours", lien: "/cours", icone: BookOpen },
     { titreCle: "navigation.notes", lien: "/notes", icone: ClipboardCheck },
     { titreCle: "navigation.apprentissage", lien: "/apprentissage", icone: MonitorPlay },
+    NOTIFICATIONS,
   ],
   enseignant: [
     ACCUEIL,
@@ -38,33 +48,41 @@ export const navigationParRole: Record<TypeRole, ElementPortail[]> = {
     { titreCle: "navigation.cours", lien: "/cours", icone: BookOpen },
     { titreCle: "navigation.notes", lien: "/notes", icone: ClipboardCheck },
     { titreCle: "navigation.apprentissage", lien: "/apprentissage", icone: MonitorPlay },
+    NOTIFICATIONS,
   ],
   reception: [
     ACCUEIL,
     { titreCle: "navigation.tableauDeBord", lien: "/tableau-de-bord", icone: LayoutDashboard },
     { titreCle: "navigation.etudiants", lien: "/etudiants", icone: Users },
+    { titreCle: "navigation.enseignants", lien: "/enseignants", icone: GraduationCap },
     { titreCle: "navigation.facultes", lien: "/facultes", icone: School },
+    NOTIFICATIONS,
   ],
   finance: [
     ACCUEIL,
     { titreCle: "navigation.tableauDeBord", lien: "/tableau-de-bord", icone: LayoutDashboard },
     { titreCle: "navigation.etudiants", lien: "/etudiants", icone: Users },
     { titreCle: "navigation.finances", lien: "/finances", icone: Landmark },
+    NOTIFICATIONS,
   ],
   personnel: [
     ACCUEIL,
     { titreCle: "navigation.tableauDeBord", lien: "/tableau-de-bord", icone: LayoutDashboard },
     { titreCle: "navigation.etudiants", lien: "/etudiants", icone: Users },
+    { titreCle: "navigation.enseignants", lien: "/enseignants", icone: GraduationCap },
     { titreCle: "navigation.cours", lien: "/cours", icone: BookOpen },
-    { titreCle: "navigation.notes", lien: "/notes", icone: ClipboardCheck },
+    NOTIFICATIONS,
   ],
   administrateur: [
     ACCUEIL,
     { titreCle: "navigation.tableauDeBord", lien: "/tableau-de-bord", icone: LayoutDashboard },
     { titreCle: "navigation.etudiants", lien: "/etudiants", icone: Users },
+    { titreCle: "navigation.enseignants", lien: "/enseignants", icone: GraduationCap },
+    { titreCle: "navigation.annonces", lien: "/annonces", icone: ClipboardList },
     { titreCle: "navigation.facultes", lien: "/facultes", icone: School },
     { titreCle: "navigation.cours", lien: "/cours", icone: BookOpen },
     { titreCle: "navigation.notes", lien: "/notes", icone: ClipboardCheck },
     { titreCle: "navigation.apprentissage", lien: "/apprentissage", icone: MonitorPlay },
+    NOTIFICATIONS,
   ],
 };

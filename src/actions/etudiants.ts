@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getTranslations } from "next-intl/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
+import { creerNotifications } from "@/bibliotheque/notifications";
 import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
 import {
   schemaEtudiant,
@@ -84,6 +85,15 @@ export async function inscrireEtudiant(
     await admin.auth.admin.deleteUser(idUtilisateur).catch(() => undefined);
     return { erreur: erreurInsert ?? t("etudiants.erreurMatricule") };
   }
+
+  await creerNotifications([idUtilisateur], {
+    titre: t("notifications.evenements.inscriptionTitre"),
+    message: t("notifications.evenements.inscriptionMessage", {
+      nom: `${prenom} ${nom}`.trim(),
+    }),
+    type: "succes",
+    lien: "/accueil",
+  });
 
   revalidatePath("/[locale]/etudiants", "page");
   revalidatePath("/[locale]/tableau-de-bord", "page");

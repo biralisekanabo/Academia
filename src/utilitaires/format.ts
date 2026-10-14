@@ -24,19 +24,41 @@ export function formatDateEntiere(
   }).format(new Date(date));
 }
 
+export function formatTempsRelatif(
+  date: string | null | undefined,
+  locale: string
+): string {
+  if (!date) return "—";
+  const langue = locale === "fr" ? "fr-FR" : "en-GB";
+  const secondes = Math.round((new Date(date).getTime() - Date.now()) / 1000);
+  const absolu = Math.abs(secondes);
+  const rtf = new Intl.RelativeTimeFormat(langue, { numeric: "auto" });
+
+  if (absolu < 60) return rtf.format(secondes, "second");
+  if (absolu < 3600) return rtf.format(Math.round(secondes / 60), "minute");
+  if (absolu < 86400) return rtf.format(Math.round(secondes / 3600), "hour");
+  if (absolu < 604800) return rtf.format(Math.round(secondes / 86400), "day");
+  return formatDateLongue(date, locale);
+}
+
 export function formatMontant(
   montant: number,
   locale: string,
-  devise = "FCFA"
+  devise = "CDF"
 ): string {
   if (!Number.isFinite(montant)) return "—";
   const langue = locale === "fr" ? "fr-FR" : "en-GB";
-  const code = devise === "FCFA" ? "XOF" : devise === "FC" ? "CDF" : devise;
-  return new Intl.NumberFormat(langue, {
-    style: "currency",
-    currency: code,
-    maximumFractionDigits: 0,
-  }).format(montant);
+  const code =
+    devise === "FCFA" ? "XOF" : devise === "FC" ? "CDF" : devise.toUpperCase();
+  try {
+    return new Intl.NumberFormat(langue, {
+      style: "currency",
+      currency: code,
+      maximumFractionDigits: code === "USD" ? 2 : 0,
+    }).format(montant);
+  } catch {
+    return `${new Intl.NumberFormat(langue).format(montant)} ${devise}`;
+  }
 }
 
 const UNITES = [

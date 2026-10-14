@@ -24,7 +24,6 @@ export const instant = false;
 export default async function PageTableauDeBord() {
   await connection();
   const t = await getTranslations();
-  const tNavig = await getTranslations("navigation");
   const locale = await getLocale();
   const session = await obtenirSession();
   const profil = session.profil;
@@ -122,7 +121,7 @@ export default async function PageTableauDeBord() {
                   <Icone className="size-4" />
                 </span>
                 <span className="flex-1 text-sm font-medium">
-                  {tNavig(titreCle as never)}
+                  {t(titreCle as never)}
                 </span>
                 <ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-brand-2" />
               </Link>

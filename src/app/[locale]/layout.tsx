@@ -4,12 +4,36 @@ import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import "./../globals.css";
+import { FournisseurRequetes } from "@/composants/partages/fournisseur-requetes";
+import { ServiceWorker } from "@/composants/partages/service-worker";
 import { FournisseurToasts } from "@/composants/ui/toaster";
 import { configuration } from "@/i18n/configuration";
 
+const DESCRIPTION =
+  "Plateforme de gestion universitaire OpenLu : étudiants, cours, notes, finances et e-learning.";
+
 export const metadata: Metadata = {
   title: { default: "OpenLu", template: "%s · OpenLu" },
-  description: "Open Learning University",
+  description: DESCRIPTION,
+  applicationName: "OpenLu",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "OpenLu",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: { telephone: false },
+  openGraph: {
+    type: "website",
+    title: "OpenLu",
+    description: DESCRIPTION,
+    siteName: "OpenLu",
+  },
+  icons: {
+    icon: "/icones/icon-192.png",
+    shortcut: "/favicon.ico",
+    apple: "/icones/apple-touch-icon.png",
+  },
 };
 
 export const viewport: Viewport = {
@@ -49,11 +73,14 @@ export default async function LayoutRacine({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{if(localStorage.getItem('openlu-theme')==='light'){document.documentElement.classList.remove('dark')}}catch(e){}",
+              "try{var p=localStorage.getItem('openlu-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
           }}
         />
         <NextIntlClientProvider>
-          <FournisseurToasts>{children}</FournisseurToasts>
+          <FournisseurRequetes>
+            <FournisseurToasts>{children}</FournisseurToasts>
+          </FournisseurRequetes>
+          <ServiceWorker />
         </NextIntlClientProvider>
       </body>
     </html>

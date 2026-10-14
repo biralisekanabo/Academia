@@ -14,6 +14,7 @@ import { Selecteur } from "@/composants/ui/selecteur";
 import { useToast } from "@/composants/ui/toaster";
 
 const NIVEAUX = ["L1", "L2", "L3", "M1", "M2"] as const;
+const DEVISES = ["CDF", "USD"] as const;
 
 export function FormulaireFrais({
   ouvert,
@@ -35,6 +36,7 @@ export function FormulaireFrais({
   const [niveau, setNiveau] = useState("L1");
   const [libelle, setLibelle] = useState("");
   const [montant, setMontant] = useState("");
+  const [devise, setDevise] = useState("CDF");
   const [anneeUniversitaire, setAnneeUniversitaire] = useState("2026-2027");
   const [erreur, setErreur] = useState<string | null>(null);
   const [envoi, setEnvoi] = useState(false);
@@ -52,6 +54,7 @@ export function FormulaireFrais({
       niveau,
       libelle,
       montant: Number(montant),
+      devise,
       anneeUniversitaire,
     });
 
@@ -128,17 +131,27 @@ export function FormulaireFrais({
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <div className="space-y-2">
             <Etiquette>{t("finances.montant")}</Etiquette>
             <Saisie
               type="number"
               min={0}
-              step="1"
+              step="any"
               value={montant}
               onChange={(e) => setMontant(e.target.value)}
               placeholder="250000"
             />
+          </div>
+          <div className="space-y-2">
+            <Etiquette>{t("finances.devise")}</Etiquette>
+            <Selecteur value={devise} onChange={(e) => setDevise(e.target.value)}>
+              {DEVISES.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </Selecteur>
           </div>
           <div className="space-y-2">
             <Etiquette>{t("finances.anneeUniversitaire")}</Etiquette>

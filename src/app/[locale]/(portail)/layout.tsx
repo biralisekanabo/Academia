@@ -30,7 +30,12 @@ export default async function LayoutPortail({
       <SidebarPortail role={role} />
 
       <div className="flex min-h-dvh flex-col md:pl-64">
-        <EntetePortail prenom={prenom} nom={nom} role={role} />
+        <EntetePortail
+          utilisateurId={session.profil.id}
+          prenom={prenom}
+          nom={nom}
+          role={role}
+        />
         <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 xl:px-10">
           <TransitionRoute>{children}</TransitionRoute>
         </main>

@@ -1,10 +1,30 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Moon, Sun } from "lucide-react";
+import { Monitor, Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Bouton } from "@/composants/ui/bouton";
 import { cn } from "@/utilitaires/cn";
+
+export type PreferenceTheme = "system" | "light" | "dark";
+
+const CLE = "openlu-theme";
+const EVENEMENT = "openlu-theme";
+
+function estPreference(valeur: string | null): valeur is PreferenceTheme {
+  return valeur === "system" || valeur === "light" || valeur === "dark";
+}
+
+export function appliquerPreference(preference: PreferenceTheme) {
+  const sombre =
+    preference === "dark" ||
+    (preference === "system" &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.classList.toggle("dark", sombre);
+  localStorage.setItem(CLE, preference);
+  window.dispatchEvent(new Event(EVENEMENT));
+}
 
 function sAbonner(rappeler: () => void) {
   const observateur = new MutationObserver(rappeler);
@@ -12,35 +32,64 @@ function sAbonner(rappeler: () => void) {
     attributes: true,
     attributeFilter: ["class"],
   });
-  return () => observateur.disconnect();
+  const media = window.matchMedia("(prefers-color-scheme: dark)");
+  window.addEventListener(EVENEMENT, rappeler);
+  media.addEventListener("change", rappeler);
+  return () => {
+    observateur.disconnect();
+    window.removeEventListener(EVENEMENT, rappeler);
+    media.removeEventListener("change", rappeler);
+  };
 }
 
-function lireSombre() {
-  return document.documentElement.classList.contains("dark");
+function lirePreference(): PreferenceTheme {
+  try {
+    const valeur = localStorage.getItem(CLE);
+    return estPreference(valeur) ? valeur : "system";
+  } catch {
+    return "system";
+  }
 }
 
-function lireSombreServeur() {
-  return true;
+function lirePreferenceServeur(): PreferenceTheme {
+  return "system";
 }
+
+const ORDRE: PreferenceTheme[] = ["system", "light", "dark"];
 
 export function BasculerTheme({ className }: { className?: string }) {
-  const sombre = useSyncExternalStore(sAbonner, lireSombre, lireSombreServeur);
+  const t = useTranslations("theme");
+  const preference = useSyncExternalStore(
+    sAbonner,
+    lirePreference,
+    lirePreferenceServeur
+  );
 
   function basculer() {
-    const suivant = !sombre;
-    document.documentElement.classList.toggle("dark", suivant);
-    localStorage.setItem("openlu-theme", suivant ? "dark" : "light");
+    const index = ORDRE.indexOf(preference);
+    appliquerPreference(ORDRE[(index + 1) % ORDRE.length]);
   }
+
+  const Icone =
+    preference === "system" ? Monitor : preference === "dark" ? Moon : Sun;
+
+  const libelle =
+    preference === "system"
+      ? t("systeme")
+      : preference === "dark"
+        ? t("sombre")
+        : t("clair");
 
   return (
     <Bouton
       variante="fantome"
       taille="icone"
-      aria-label="Basculer le thème"
+      aria-label={libelle}
+      title={libelle}
       className={cn("rounded-lg", className)}
       onClick={basculer}
     >
-      {sombre ? <Sun /> : <Moon />}
+      <Icone />
     </Bouton>
   );
 }

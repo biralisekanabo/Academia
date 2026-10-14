@@ -10,7 +10,7 @@ create table if not exists public.openlu_frais_scolarite (
   niveau               openlu_type_niveau not null default 'L1',
   libelle              text not null,
   montant              numeric not null check (montant >= 0),
-  devise               text not null default 'FCFA',
+  devise               text not null default 'CDF',
   annee_universitaire  text not null default '2026-2027',
   cree_le              timestamptz not null default now(),
   mis_a_jour           timestamptz not null default now(),

@@ -1,52 +1,81 @@
-import { BookOpen, type LucideIcon } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
+import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { EnTetePage } from "@/composants/partages/en-tete-page";
+import type { OptionRecherche } from "@/composants/partages/selecteur-recherche";
+import {
+  GestionCours,
+  type CoursItem,
+} from "@/fonctionnalites/cours/gestion-cours";
 
 export const instant = false;
 
 export default async function PageCours() {
   await connection();
   const t = await getTranslations();
-  await obtenirProfilSousControle([
+  const profil = await obtenirProfilSousControle([
     "administrateur",
     "personnel",
     "enseignant",
     "etudiant",
   ]);
 
-  return (
-    <ModuleVide
-      icone={BookOpen}
-      titre={t("cours.titre")}
-      sousTitre={t("cours.sousTitre")}
-      vide={t("cours.aucun")}
-    />
-  );
-}
+  const supabase = await creerClientServeur();
 
-function ModuleVide({
-  icone: Icone,
-  titre,
-  sousTitre,
-  vide,
-}: {
-  icone: LucideIcon;
-  titre: string;
-  sousTitre: string;
-  vide: string;
-}) {
+  const { data: cours } = await supabase
+    .from("openlu_cours")
+    .select(
+      "id, code, titre, description, credits, semestre, enseignant_id, openlu_enseignants(openlu_profils(prenom, nom))"
+    )
+    .order("semestre", { ascending: true })
+    .order("code", { ascending: true });
+
+  let optionsEnseignants: OptionRecherche[] = [];
+  if (profil.role === "administrateur") {
+    const { data: enseignants } = await supabase
+      .from("openlu_enseignants")
+      .select("id, openlu_profils(prenom, nom)")
+      .order("date_embauche", { ascending: true });
+    optionsEnseignants =
+      enseignants?.map((en) => ({
+        valeur: en.id,
+        libelle: en.openlu_profils
+          ? `${en.openlu_profils.prenom} ${en.openlu_profils.nom}`.trim()
+          : "—",
+      })) ?? [];
+  }
+
+  const listeCours: CoursItem[] =
+    cours?.map((c) => {
+      const prof = c.openlu_enseignants?.openlu_profils;
+      return {
+        id: c.id,
+        code: c.code,
+        titre: c.titre,
+        description: c.description,
+        credits: c.credits,
+        semestre: c.semestre,
+        enseignantId: c.enseignant_id,
+        enseignantNom: prof ? `${prof.prenom} ${prof.nom}`.trim() : null,
+      };
+    }) ?? [];
+
   return (
     <div className="space-y-6">
-      <EnTetePage icone={Icone} titre={titre} sousTitre={sousTitre} />
-      <div className="carte-vitrine halo-gradiant animate-entree flex flex-col items-center gap-4 rounded-2xl border bg-card py-20 text-center shadow-sm">
-        <span className="degrade-brand grid size-14 place-items-center rounded-2xl text-white shadow-md shadow-brand-1/25">
-          <Icone className="size-7" />
-        </span>
-        <p className="text-sm text-muted-foreground">{vide}</p>
-      </div>
+      <EnTetePage
+        icone={BookOpen}
+        titre={t("cours.titre")}
+        sousTitre={t("cours.sousTitre")}
+      />
+      <GestionCours
+        role={profil.role}
+        utilisateurId={profil.id}
+        cours={listeCours}
+        enseignants={optionsEnseignants}
+      />
     </div>
   );
 }

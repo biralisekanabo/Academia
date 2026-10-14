@@ -1,0 +1,40 @@
+{
+  "name": "OpenLu — Open Learning University",
+  "short_name": "OpenLu",
+  "description": "Plateforme de gestion universitaire : étudiants, cours, notes, finances et e-learning.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#0f0f1a",
+  "theme_color": "#6d4aff",
+  "lang": "fr",
+  "dir": "ltr",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/icones/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icones/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    { "name": "Tableau de bord", "url": "/tableau-de-bord" },
+    { "name": "Notes", "url": "/notes" },
+    { "name": "Finances", "url": "/finances" }
+  ]
+}

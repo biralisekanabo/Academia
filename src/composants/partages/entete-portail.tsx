@@ -5,15 +5,18 @@ import { useTranslations } from "next-intl";
 
 import { seDeconnecter } from "@/actions/auth";
 import { BasculerTheme } from "@/composants/partages/basculer-theme";
+import { ClocheNotifications } from "@/composants/partages/cloche-notifications";
 import { SelecteurLangue } from "@/composants/partages/selecteur-langue";
 import { Bouton } from "@/composants/ui/bouton";
 import type { TypeRole } from "@/types/database";
 
 export function EntetePortail({
+  utilisateurId,
   prenom,
   nom,
   role,
 }: {
+  utilisateurId: string;
   prenom: string;
   nom: string;
   role: TypeRole;
@@ -37,6 +40,7 @@ export function EntetePortail({
       </div>
 
       <div className="flex shrink-0 items-center gap-1.5">
+        <ClocheNotifications utilisateurId={utilisateurId} />
         <SelecteurLangue className="hidden sm:flex" />
         <BasculerTheme className="hover:[&_svg]:rotate-[25deg]" />
         <form action={seDeconnecter}>

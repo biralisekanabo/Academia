@@ -46,7 +46,7 @@ export default async function PageRecu({ searchParams }: ParametresPage) {
         reference={data.reference}
         libelle={data.libelle}
         montant={Number(data.montant)}
-        devise="FCFA"
+        devise="CDF"
         datePaiement={data.date_paiement}
         methode={data.methode}
         prenom={profil?.prenom ?? ""}
