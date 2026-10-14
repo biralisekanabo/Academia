@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "titre": "OpenLu · Open Learning University",
+    "description": "University management platform: students, courses, grades, finance and e-learning."
+  },
+  "navigation": {
+    "accueil": "Home",
+    "fonctionnalites": "Features",
+    "connexion": "Sign in",
+    "inscription": "Create account",
+    "tableauDeBord": "Dashboard",
+    "etudiants": "Students",
+    "cours": "Courses",
+    "notes": "Grades",
+    "finances": "Finance",
+    "facultes": "Faculties & programs",
+    "apprentissage": "E-learning",
+    "deconnexion": "Sign out",
+    "profil": "My profile"
+  },
+  "roles": {
+    "etudiant": "Student",
+    "enseignant": "Teacher",
+    "reception": "Reception / Admissions",
+    "finance": "Finance",
+    "personnel": "Staff",
+    "administrateur": "Administrator"
+  },
+  "hero": {
+    "insigne": "Next-generation university management",
+    "titre": "The university of tomorrow,",
+    "titreAccent": "simply open.",
+    "sousTitre": "OpenLu unites students, teachers and administration on a modern platform: enrollment, grades, finance and e-learning in one place.",
+    "ctaPrimaire": "Get started",
+    "ctaSecondaire": "Explore the platform",
+    "filigrane": "OPENLU"
+  },
+  "statistiques": {
+    "etudiants": "Students",
+    "enseignants": "Teachers",
+    "cours": "Courses",
+    "diplomes": "Graduates"
+  },
+  "fonctionnalites": {
+    "titre": "Everything to run your university",
+    "sousTitre": "Six modules designed for administration, teachers and students.",
+    "modules": {
+      "etudiants": {
+        "titre": "Students & enrollment",
+        "description": "Records, student IDs, programs and enrollment status managed in a few clicks."
+      },
+      "cours": {
+        "titre": "Courses & teachers",
+        "description": "Course catalog, teacher assignments and timetables."
+      },
+      "notes": {
+        "titre": "Grades & assessments",
+        "description": "Quizzes, midterms, coefficients and automatic averages."
+      },
+      "finances": {
+        "titre": "Finance & tuition",
+        "description": "Fee schedules by faculty and promotion, payments with receipts and teacher salaries."
+      },
+      "roles": {
+        "titre": "Roles & security",
+        "description": "Role-based access (administration, reception, finance, teacher, student) with Supabase RLS."
+      },
+      "elearning": {
+        "titre": "E-learning portal",
+        "description": "Course materials, assignments and online submissions."
+      }
+    }
+  },
+  "cta": {
+    "titre": "Ready to open your university?",
+    "sousTitre": "Create your account and explore the dashboard in seconds.",
+    "bouton": "Create my account"
+  },
+  "pied": {
+    "droits": "All rights reserved.",
+    "faitAvec": "Crafted with care for education."
+  },
+  "auth": {
+    "connexionTitre": "Welcome back",
+    "connexionSousTitre": "Sign in to your workspace.",
+    "inscriptionTitre": "Create an account",
+    "inscriptionSousTitre": "Two fields. You’re all set.",
+    "accrocheConnexion": "Good to see you again",
+    "accrocheInscription": "Welcome to OPENLU",
+    "promesseTitre": "Your campus, made simple.",
+    "promesseTexte": "Find your courses and services in one place.",
+    "promesseCours": "Your courses",
+    "promesseCompte": "Your space",
+    "badgeConnexion": "Sign in",
+    "badgeInscription": "New account",
+    "aideCompte": "Need help? Contact your university service.",
+    "nom": "Last name",
+    "service": "Service",
+    "servicePlaceholder": "e.g. finance, reception, admissions…",
+    "serviceAide": "Use the service linked to your account.",
+    "serviceAideConnexion": "The service provided by your university.",
+    "serviceAideInscription": "Enter your university service.",
+    "serviceInvalide": "Invalid service (at least 2 characters).",
+    "serviceDejaUtilise": "This service is already in use.",
+    "email": "Email address",
+    "motDePasse": "Password",
+    "motDePasseCourt": "At least 6 characters",
+    "motDePasseAideConnexion": "Your usual password.",
+    "motDePasseAideInscription": "At least 6 characters.",
+    "requis": "Required field",
+    "emailInvalide": "Invalid email address",
+    "seConnecter": "Sign in",
+    "sInscrire": "Sign up",
+    "pasDeCompte": "Don't have an account?",
+    "dejaUnCompte": "Already registered?",
+    "creerUnCompte": "Create an account",
+    "connexionLien": "Sign in",
+    "erreurIdentifiants": "Incorrect service or password.",
+    "erreurInscription": "Could not create the account. Please check your details.",
+    "deconnexionReussie": "You have been signed out.",
+    "chargement": "Loading…",
+    "enCours": "Please wait…"
+  },
+  "commun": {
+    "chargement": "Loading…",
+    "retour": "Back",
+    "rechercher": "Search…",
+    "aucunResultat": "No results.",
+    "actions": "Actions",
+    "modifier": "Edit",
+    "supprimer": "Delete",
+    "annuler": "Cancel",
+    "sauvegarder": "Save",
+    "creer": "Create",
+    "fermer": "Close",
+    "options": "Options",
+    "bienvenue": "Hello",
+    "statistiquesChargement": "Loading statistics…",
+    "erreurFormulaire": "Please check the information in the form."
+  },
+  "statuts": {
+    "actif": "Active",
+    "inactif": "Inactive",
+    "suspendu": "Suspended",
+    "diplome": "Graduated",
+    "rejete": "Rejected",
+    "en_attente": "Pending"
+  },
+  "tableauDeBord": {
+    "titre": "Dashboard",
+    "sousTitre": "Overview of your university.",
+    "etudiantsActifs": "Active students",
+    "coursProposes": "Courses offered",
+    "enseignantsActifs": "Teachers",
+    "tauxInscription": "Enrollment rate",
+    "accesRapide": "Quick access",
+    "dernieresInscriptions": "Latest enrollments",
+    "afficherTout": "View all",
+    "aucuneInscription": "No recent enrollments."
+  },
+  "etudiants": {
+    "titre": "Students",
+    "sousTitre": "Manage records and enrollments.",
+    "nouveau": "Enroll a student",
+    "matricule": "Student ID",
+    "prenom": "First name",
+    "nom": "Last name",
+    "email": "Email",
+    "telephone": "Phone",
+    "faculte": "Faculty",
+    "filiere": "Program",
+    "niveau": "Level",
+    "selectionnerFaculte": "Search a faculty…",
+    "selectionnerFiliere": "Search a program…",
+    "promotion": "Year",
+    "faculteInconnue": "Faculty not set",
+    "statut": "Status",
+    "dateInscription": "Enrolled on",
+    "aucun": "No students yet.",
+    "details": "View record",
+    "inscriptionReussie": "Student enrolled successfully.",
+    "matriculeGenere": "Student ID generated automatically.",
+    "recherche": "Search by name or student ID…",
+    "modifier": "Edit record",
+    "miseAJourReussie": "Student record updated.",
+    "erreurMiseAJour": "Could not update the student record.",
+    "erreurMiseAJourPartielle": "The profile was updated, but the student record could not be saved.",
+    "erreurFiliereFaculte": "The selected program does not belong to this faculty.",
+    "desactiver": "Deactivate",
+    "reactiver": "Reactivate",
+    "confirmerDesactivation": "Deactivate this student?",
+    "confirmerReactivation": "Reactivate this student?",
+    "aideDesactivation": "The record will be kept. You can reactivate the student later.",
+    "aideReactivation": "The student will be marked as active again.",
+    "etudiantDesactive": "Student deactivated. The record was kept.",
+    "etudiantReactive": "Student reactivated.",
+    "erreurStatut": "Could not change this student’s status.",
+    "erreurCompte": "Could not create the student account. Please try again.",
+    "emailDejaUtilise": "This email address is already used by another account.",
+    "erreurMatricule": "Could not generate a unique student ID. Try again."
+  },
+  "cours": {
+    "titre": "Courses",
+    "sousTitre": "Course catalog and teachers.",
+    "nouveau": "New course",
+    "code": "Code",
+    "intitule": "Title",
+    "credits": "Credits",
+    "semestre": "Semester",
+    "enseignant": "Teacher",
+    "aucun": "No courses yet."
+  },
+  "notes": {
+    "titre": "Grades & assessments",
+    "sousTitre": "Quizzes, midterms and results.",
+    "aucun": "No assessments yet."
+  },
+  "factures": {
+    "titre": "Faculties",
+    "sousTitre": "Pick a faculty, then search for a program.",
+    "choisirFaculte": "Choose a faculty",
+    "chargement": "Loading faculties…",
+    "filiereRecherche": "Search a program…",
+    "aucuneFiliere": "Choose a faculty to show its programs.",
+    "aucunResultat": "No program matches your search."
+  },
+  "finances": {
+    "titre": "Finance",
+    "sousTitre": "Tuition fees by faculty, program and level.",
+    "libelle": "Label",
+    "montant": "Amount",
+    "devise": "Currency",
+    "anneeUniversitaire": "Academic year",
+    "niveau": "Level",
+    "frais": "Tuition fees",
+    "paiements": "Payments",
+    "salaires": "Teacher salaries",
+    "nouveauFrais": "Set a fee",
+    "nouveauPaiement": "Record a payment",
+    "nouveauSalaire": "Pay a teacher",
+    "encaisse": "Collected",
+    "enAttente": "Pending",
+    "echoue": "Failed",
+    "rembourse": "Refunded",
+    "reference": "Reference",
+    "methode": "Method",
+    "etudiant": "Student",
+    "enseignant": "Teacher",
+    "date": "Date",
+    "mois": "Pay month",
+    "aucun": "Nothing to display yet.",
+    "erreurCreation": "Could not save the operation. Check the details.",
+    "encaisser": "Collect",
+    "payer": "Pay",
+    "recu": "Receipt",
+    "rechercherEtudiant": "Search a student…",
+    "rechercherEnseignant": "Search a teacher…",
+    "methodes": {
+      "especes": "Cash",
+      "mobile_money": "Mobile Money",
+      "carte_bancaire": "Bank card",
+      "virement": "Bank transfer",
+      "cheque": "Cheque",
+      "autre": "Other"
+    },
+    "statuts": {
+      "en_attente": "Pending",
+      "valide": "Validated",
+      "echoue": "Failed",
+      "rembourse": "Refunded"
+    }
+  },
+  "recu": {
+    "titre": "Payment receipt",
+    "sousTitre": "Official payment receipt",
+    "universite": "OPEN LU",
+    "universiteSuffixe": "(OPEN LEARNING UNIVERSITY)",
+    "recu": "PAYMENT RECEIPT",
+    "numero": "Receipt No.",
+    "recuDe": "Received from",
+    "libelle": "Description",
+    "montantEnLettres": "Amount in words",
+    "total": "Total amount",
+    "signature": "Accountant / Cashier",
+    "imprimer": "Print receipt",
+    "fermer": "Close",
+    "sousTotal": "Subtotal",
+    "tva": "Tax included",
+    "cursus": "Program",
+    "date": "Date",
+    "mentions": "This receipt certifies payment to the university administration."
+  },
+  "toasts": {
+    "succes": "Success",
+    "erreur": "Something went wrong",
+    "etudiantCree": "Student enrolled",
+    "etudiantCreeDesc": "Registration number {matricule} generated successfully.",
+    "fraisCree": "Fee saved",
+    "fraisCreeDesc": "The fee was added to tuition successfully.",
+    "paiementEnregistre": "Payment recorded",
+    "paiementEnregistreDesc": "The receipt is ready to be printed.",
+    "salaireEnregistre": "Salary recorded",
+    "salaireEnregistreDesc": "The teacher's payment has been recorded."
+  },
+  "apprentissage": {
+    "titre": "E-learning",
+    "sousTitre": "Course materials, assignments and submissions.",
+    "aucun": "No content yet."
+  }
+}

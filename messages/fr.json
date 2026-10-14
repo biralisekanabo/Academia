@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "titre": "OpenLu · Open Learning University",
+    "description": "Plateforme de gestion universitaire : étudiants, cours, notes, finances et e-learning."
+  },
+  "navigation": {
+    "accueil": "Accueil",
+    "fonctionnalites": "Fonctionnalités",
+    "connexion": "Se connecter",
+    "inscription": "Créer un compte",
+    "tableauDeBord": "Tableau de bord",
+    "etudiants": "Étudiants",
+    "cours": "Cours",
+    "notes": "Notes",
+    "finances": "Finances",
+    "facultes": "Facultés & filières",
+    "apprentissage": "E-learning",
+    "deconnexion": "Se déconnecter",
+    "profil": "Mon profil"
+  },
+  "roles": {
+    "etudiant": "Étudiant",
+    "enseignant": "Enseignant",
+    "reception": "Réception / Inscriptions",
+    "finance": "Finance",
+    "personnel": "Personnel",
+    "administrateur": "Administrateur"
+  },
+  "hero": {
+    "insigne": "Gestion universitaire nouvelle génération",
+    "titre": "L'université de demain,",
+    "titreAccent": "simplement ouverte.",
+    "sousTitre": "OpenLu réunit étudiants, enseignants et administration sur une plateforme moderne : inscriptions, notes, finances et e-learning au même endroit.",
+    "ctaPrimaire": "Commencer maintenant",
+    "ctaSecondaire": "Découvrir la plateforme",
+    "filigrane": "OPENLU"
+  },
+  "statistiques": {
+    "etudiants": "Étudiants",
+    "enseignants": "Enseignants",
+    "cours": "Cours",
+    "diplomes": "Diplômés"
+  },
+  "fonctionnalites": {
+    "titre": "Tout pour piloter votre université",
+    "sousTitre": "Six modules pensés pour l'administration, les enseignants et les étudiants.",
+    "modules": {
+      "etudiants": {
+        "titre": "Étudiants & inscriptions",
+        "description": "Dossiers, matricules, filières et statuts d'inscription gérés en quelques clics."
+      },
+      "cours": {
+        "titre": "Cours & enseignants",
+        "description": "Catalogue de cours, affectation des enseignants et emplois du temps."
+      },
+      "notes": {
+        "titre": "Notes & évaluations",
+        "description": "Contrôles, partiels, coefficients et moyennes automatiques."
+      },
+      "finances": {
+        "titre": "Finances & frais",
+        "description": "Barèmes par faculté et promotion, paiements avec reçus et salaires des enseignants."
+      },
+      "roles": {
+        "titre": "Rôles & sécurité",
+        "description": "Accès par rôle (administration, réception, finance, enseignant, étudiant) avec RLS Supabase."
+      },
+      "elearning": {
+        "titre": "Portail e-learning",
+        "description": "Supports de cours, devoirs à rendre et soumissions en ligne."
+      }
+    }
+  },
+  "cta": {
+    "titre": "Prêt à ouvrir votre université ?",
+    "sousTitre": "Créez votre compte et explorez le tableau de bord en quelques secondes.",
+    "bouton": "Créer mon compte"
+  },
+  "pied": {
+    "droits": "Tous droits réservés.",
+    "faitAvec": "Conçu avec soin pour l'éducation."
+  },
+  "auth": {
+    "connexionTitre": "Bon retour",
+    "connexionSousTitre": "Connectez-vous à votre espace.",
+    "inscriptionTitre": "Créer un compte",
+    "inscriptionSousTitre": "Deux champs. Et c’est parti.",
+    "accrocheConnexion": "Heureux de vous revoir",
+    "accrocheInscription": "Bienvenue sur OPENLU",
+    "promesseTitre": "Votre campus, plus simple.",
+    "promesseTexte": "Retrouvez vos cours et vos services au même endroit.",
+    "promesseCours": "Vos cours",
+    "promesseCompte": "Votre espace",
+    "badgeConnexion": "Connexion",
+    "badgeInscription": "Nouveau compte",
+    "aideCompte": "Besoin d’aide ? Contactez votre service universitaire.",
+    "nom": "Nom",
+    "service": "Service",
+    "servicePlaceholder": "ex. finance, réception, scolarité…",
+    "serviceAide": "Utilisez le service lié à votre compte.",
+    "serviceAideConnexion": "Le service fourni par votre université.",
+    "serviceAideInscription": "Saisissez votre service universitaire.",
+    "serviceInvalide": "Service invalide (2 caractères minimum).",
+    "serviceDejaUtilise": "Ce service est déjà utilisé.",
+    "email": "Adresse e-mail",
+    "motDePasse": "Mot de passe",
+    "motDePasseCourt": "Au moins 6 caractères",
+    "motDePasseAideConnexion": "Votre mot de passe habituel.",
+    "motDePasseAideInscription": "6 caractères minimum.",
+    "requis": "Champ requis",
+    "emailInvalide": "Adresse e-mail invalide",
+    "seConnecter": "Se connecter",
+    "sInscrire": "S'inscrire",
+    "pasDeCompte": "Pas encore de compte ?",
+    "dejaUnCompte": "Déjà inscrit ?",
+    "creerUnCompte": "Créer un compte",
+    "connexionLien": "Se connecter",
+    "erreurIdentifiants": "Service ou mot de passe incorrect.",
+    "erreurInscription": "Impossible de créer le compte. Vérifiez vos informations.",
+    "deconnexionReussie": "Vous êtes déconnecté.",
+    "chargement": "Chargement…",
+    "enCours": "Veuillez patienter…"
+  },
+  "commun": {
+    "chargement": "Chargement…",
+    "retour": "Retour",
+    "rechercher": "Rechercher…",
+    "aucunResultat": "Aucun résultat.",
+    "actions": "Actions",
+    "modifier": "Modifier",
+    "supprimer": "Supprimer",
+    "annuler": "Annuler",
+    "sauvegarder": "Enregistrer",
+    "creer": "Créer",
+    "fermer": "Fermer",
+    "options": "Options",
+    "bienvenue": "Bonjour",
+    "statistiquesChargement": "Chargement des statistiques…",
+    "erreurFormulaire": "Vérifiez les informations du formulaire."
+  },
+  "statuts": {
+    "actif": "Actif",
+    "inactif": "Inactif",
+    "suspendu": "Suspendu",
+    "diplome": "Diplômé",
+    "rejete": "Rejeté",
+    "en_attente": "En attente"
+  },
+  "tableauDeBord": {
+    "titre": "Tableau de bord",
+    "sousTitre": "Vue d'ensemble de votre université.",
+    "etudiantsActifs": "Étudiants actifs",
+    "coursProposes": "Cours proposés",
+    "enseignantsActifs": "Enseignants",
+    "tauxInscription": "Taux d'inscription",
+    "accesRapide": "Accès rapide",
+    "dernieresInscriptions": "Dernières inscriptions",
+    "afficherTout": "Tout afficher",
+    "aucuneInscription": "Aucune inscription récente."
+  },
+  "etudiants": {
+    "titre": "Étudiants",
+    "sousTitre": "Gérez les dossiers et les inscriptions.",
+    "nouveau": "Inscrire un étudiant",
+    "matricule": "Matricule",
+    "prenom": "Prénom",
+    "nom": "Nom",
+    "email": "E-mail",
+    "telephone": "Téléphone",
+    "faculte": "Faculté",
+    "filiere": "Filière",
+    "niveau": "Niveau",
+    "selectionnerFaculte": "Rechercher une faculté…",
+    "selectionnerFiliere": "Rechercher une filière…",
+    "promotion": "Promotion",
+    "faculteInconnue": "Faculté non renseignée",
+    "statut": "Statut",
+    "dateInscription": "Inscrit le",
+    "aucun": "Aucun étudiant pour le moment.",
+    "details": "Voir le dossier",
+    "inscriptionReussie": "Étudiant inscrit avec succès.",
+    "matriculeGenere": "Matricule généré automatiquement.",
+    "recherche": "Rechercher par nom, prénom ou matricule…",
+    "modifier": "Modifier le dossier",
+    "miseAJourReussie": "Dossier étudiant mis à jour.",
+    "erreurMiseAJour": "Impossible de mettre à jour le dossier étudiant.",
+    "erreurMiseAJourPartielle": "Le profil a été modifié, mais le dossier étudiant n’a pas pu être mis à jour.",
+    "erreurFiliereFaculte": "La filière choisie ne correspond pas à cette faculté.",
+    "desactiver": "Désactiver",
+    "reactiver": "Réactiver",
+    "confirmerDesactivation": "Désactiver cet étudiant ?",
+    "confirmerReactivation": "Réactiver cet étudiant ?",
+    "aideDesactivation": "Le dossier reste conservé. L’étudiant pourra être réactivé plus tard.",
+    "aideReactivation": "L’étudiant sera de nouveau marqué comme actif.",
+    "etudiantDesactive": "Étudiant désactivé. Son dossier est conservé.",
+    "etudiantReactive": "Étudiant réactivé.",
+    "erreurStatut": "Impossible de modifier le statut de cet étudiant.",
+    "erreurCompte": "Impossible de créer le compte étudiant. Veuillez réessayer.",
+    "emailDejaUtilise": "Cette adresse e-mail est déjà utilisée par un autre compte.",
+    "erreurMatricule": "Impossible de générer un matricule unique. Réessayez."
+  },
+  "cours": {
+    "titre": "Cours",
+    "sousTitre": "Catalogue des cours et des enseignants.",
+    "nouveau": "Nouveau cours",
+    "code": "Code",
+    "intitule": "Intitulé",
+    "credits": "Crédits",
+    "semestre": "Semestre",
+    "enseignant": "Enseignant",
+    "aucun": "Aucun cours pour le moment."
+  },
+  "notes": {
+    "titre": "Notes & évaluations",
+    "sousTitre": "Contrôles, partiels et résultats.",
+    "aucun": "Aucune évaluation pour le moment."
+  },
+  "factures": {
+    "titre": "Facultés",
+    "sousTitre": "Sélectionnez une faculté puis recherchez une filière.",
+    "choisirFaculte": "Choisir une faculté",
+    "chargement": "Chargement des facultés…",
+    "filiereRecherche": "Rechercher une filière…",
+    "aucuneFiliere": "Choisissez une faculté pour afficher ses filières.",
+    "aucunResultat": "Aucune filière ne correspond à votre recherche."
+  },
+  "finances": {
+    "titre": "Finances",
+    "sousTitre": "Frais de scolarité par faculté, filière et promotion.",
+    "libelle": "Libellé",
+    "montant": "Montant",
+    "devise": "Devise",
+    "anneeUniversitaire": "Année universitaire",
+    "niveau": "Niveau",
+    "frais": "Frais de scolarité",
+    "paiements": "Paiements",
+    "salaires": "Salaires enseignants",
+    "nouveauFrais": "Définir un frais",
+    "nouveauPaiement": "Encaisser un paiement",
+    "nouveauSalaire": "Payer un enseignant",
+    "encaisse": "Encaissé",
+    "enAttente": "En attente",
+    "echoue": "Échoué",
+    "rembourse": "Remboursé",
+    "reference": "Référence",
+    "methode": "Méthode",
+    "etudiant": "Étudiant",
+    "enseignant": "Enseignant",
+    "date": "Date",
+    "mois": "Mois de paie",
+    "aucun": "Aucun élément à afficher pour le moment.",
+    "erreurCreation": "Impossible d'enregistrer l'opération. Vérifiez les informations.",
+    "encaisser": "Encaisser",
+    "payer": "Payer",
+    "recu": "Reçu",
+    "rechercherEtudiant": "Rechercher un étudiant…",
+    "rechercherEnseignant": "Rechercher un enseignant…",
+    "methodes": {
+      "especes": "Espèces",
+      "mobile_money": "Mobile Money",
+      "carte_bancaire": "Carte bancaire",
+      "virement": "Virement",
+      "cheque": "Chèque",
+      "autre": "Autre"
+    },
+    "statuts": {
+      "en_attente": "En attente",
+      "valide": "Validé",
+      "echoue": "Échoué",
+      "rembourse": "Remboursé"
+    }
+  },
+  "recu": {
+    "titre": "Reçu de paiement",
+    "sousTitre": "Reçu officiel de paiement",
+    "universite": "OPEN LU",
+    "universiteSuffixe": "(OPEN LEARNING UNIVERSITY)",
+    "recu": "REÇU DE PAIEMENT",
+    "numero": "N° de reçu",
+    "recuDe": "Reçu par",
+    "libelle": "Désignation",
+    "montantEnLettres": "Montant en lettres",
+    "total": "Montant total",
+    "signature": "Le comptable / La caisse",
+    "imprimer": "Imprimer le reçu",
+    "fermer": "Fermer",
+"sousTotal": "Sous-total",
+    "tva": "Taxe incluse",
+    "cursus": "Filière",
+    "date": "Date",
+    "mentions": "Ce reçu fait foi de paiement auprès de l'administration de l'université."
+  },
+  "toasts": {
+    "succes": "Opération réussie",
+    "erreur": "Une erreur est survenue",
+    "etudiantCree": "Étudiant inscrit",
+    "etudiantCreeDesc": "Matricule {matricule} généré avec succès.",
+    "fraisCree": "Frais enregistré",
+    "fraisCreeDesc": "Le frais a bien été ajouté à la scolarité.",
+    "paiementEnregistre": "Paiement enregistré",
+    "paiementEnregistreDesc": "Le reçu est prêt à être imprimé.",
+    "salaireEnregistre": "Salaire enregistré",
+    "salaireEnregistreDesc": "Le paiement de l'enseignant a été enregistré."
+  },
+  "apprentissage": {
+    "titre": "E-learning",
+    "sousTitre": "Supports de cours, devoirs et soumissions.",
+    "aucun": "Aucun contenu pour le moment."
+  }
+}
