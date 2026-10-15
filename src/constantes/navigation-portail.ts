@@ -33,8 +33,7 @@ const NOTIFICATIONS: ElementPortail = {
   icone: Bell,
 };
 
-export const navigationParRole: Record<TypeRole, ElementPortail[]> = {
-  etudiant: [
+export const navigationParRole: Record<TypeRole, ElementPortail[]> = {  etudiant: [
     ACCUEIL,
     { titreCle: "navigation.tableauDeBord", lien: "/tableau-de-bord", icone: LayoutDashboard },
     { titreCle: "navigation.cours", lien: "/cours", icone: BookOpen },
@@ -86,3 +85,18 @@ export const navigationParRole: Record<TypeRole, ElementPortail[]> = {
     NOTIFICATIONS,
   ],
 };
+
+// Destination par défaut après connexion, selon le service (rôle) du compte.
+export const accueilParRole: Record<TypeRole, string> = {
+  etudiant: "/tableau-de-bord",
+  enseignant: "/tableau-de-bord",
+  administrateur: "/tableau-de-bord",
+  personnel: "/etudiants",
+  reception: "/etudiants",
+  finance: "/finances",
+};
+
+export function cheminApresConnexion(role?: TypeRole | null): string {
+  if (!role) return "/accueil";
+  return accueilParRole[role] ?? "/accueil";
+}

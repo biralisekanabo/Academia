@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { GraduationCap, Pencil, Search, UserPlus } from "lucide-react";
+import { Ban, CheckCircle2, GraduationCap, Pencil, Search, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { definirStatutEnseignant, modifierEnseignant } from "@/actions/enseignants";
@@ -169,7 +169,7 @@ export function ListeEnseignants({
         sousTitre={t("enseignants.sousTitre")}
         actions={
           peutGerer ? (
-            <Link href="/enseignants/nouveau">
+            <Link href="/enseignants/nouveau" prefetch>
               <Bouton type="button">
                 <UserPlus className="size-4" />
                 {t("enseignants.nouveau")}
@@ -238,26 +238,39 @@ export function ListeEnseignants({
                     </TableauCellule>
                     {peutGerer && (
                       <TableauCellule>
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1">
                           <Bouton
                             type="button"
                             variante="fantome"
-                            taille="sm"
+                            taille="icone"
+                            aria-label={t("commun.modifier")}
+                            title={t("commun.modifier")}
                             onClick={() => ouvrirModification(enseignant)}
                           >
-                            <Pencil className="size-3.5" />
-                            {t("commun.modifier")}
+                            <Pencil className="size-4" />
                           </Bouton>
                           <Bouton
                             type="button"
                             variante="contour"
-                            taille="sm"
+                            taille="icone"
                             disabled={enCours}
+                            aria-label={
+                              actif
+                                ? t("enseignants.desactiver")
+                                : t("enseignants.reactiver")
+                            }
+                            title={
+                              actif
+                                ? t("enseignants.desactiver")
+                                : t("enseignants.reactiver")
+                            }
                             onClick={() => setABasculer(enseignant)}
                           >
-                            {actif
-                              ? t("enseignants.desactiver")
-                              : t("enseignants.reactiver")}
+                            {actif ? (
+                              <Ban className="size-4" />
+                            ) : (
+                              <CheckCircle2 className="size-4" />
+                            )}
                           </Bouton>
                         </div>
                       </TableauCellule>

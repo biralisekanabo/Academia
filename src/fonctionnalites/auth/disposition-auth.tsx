@@ -30,7 +30,7 @@ export async function DispositionAuth({
 
   return (
     <TransitionRoute>
-    <div className="relative grid min-h-dvh overflow-hidden bg-background lg:grid-cols-2">
+    <div className="relative grid h-dvh overflow-y-auto overscroll-contain bg-background sans-scrollbar lg:grid-cols-2">
       <div className="degrade-brand relative hidden overflow-hidden text-white lg:flex lg:flex-col lg:justify-between lg:p-14 xl:p-20">
         <div className="animate-flotter absolute -top-28 -left-28 size-96 rounded-full bg-white/10 blur-3xl" />
         <div className="animate-flotter-lent absolute -right-20 -bottom-24 size-80 rounded-full bg-white/15 blur-3xl" />
@@ -89,7 +89,7 @@ export async function DispositionAuth({
           <BasculerTheme />
         </header>
 
-        <div className="animate-apparition flex w-full max-w-md flex-col gap-6">
+        <div className="animate-apparition my-auto flex w-full max-w-md flex-col gap-6">
           <div className="flex justify-center lg:hidden">
             <Logo taille={52} />
           </div>
@@ -120,9 +120,6 @@ export async function DispositionAuth({
               {enfants}
             </CarteContenu>
           </Carte>
-          <p className="text-center text-xs text-muted-foreground">
-            {t("aideCompte")}
-          </p>
         </div>
       </div>
     </div>

@@ -386,7 +386,7 @@ function GrilleNotes({
         <TableauEntete>
           <tr className="bg-muted/40">
             <TableauEnteteCellule>{t("finances.etudiant")}</TableauEnteteCellule>
-            <TableauEnteteCellule className="w-32">
+            <TableauEnteteCellule className="w-24 sm:w-32">
               {t("notes.note")} / {evaluation.bareme}
             </TableauEnteteCellule>
             <TableauEnteteCellule>{t("notes.appreciation")}</TableauEnteteCellule>

@@ -14,7 +14,7 @@ export default async function PageConnexion() {
   const locale = await getLocale();
 
   const session = await obtenirSession();
-  if (session.utilisateur) {
+  if (session.utilisateur && session.profil) {
     redirect({ href: "/accueil", locale });
   }
 

@@ -15,8 +15,9 @@ export function ServiceWorker() {
     if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
 
     navigator.serviceWorker
-      .register("/sw.js", { scope: "/" })
-      .then(async () => {
+      .register("/sw.js", { scope: "/", updateViaCache: "none" })
+      .then(async (enregistrement) => {
+        void enregistrement.update().catch(() => undefined);
         if (!supportePush() || Notification.permission !== "granted") return;
         try {
           const abonnement = (await abonnementExistant()) ?? (await abonnerPush());

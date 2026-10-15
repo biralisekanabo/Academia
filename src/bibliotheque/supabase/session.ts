@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import type { TypeRole } from "@/types/database";
 
@@ -14,7 +16,7 @@ export type Session = {
   } | null;
 };
 
-export async function obtenirSession(): Promise<Session> {
+export const obtenirSession = cache(async (): Promise<Session> => {
   const supabase = await creerClientServeur();
 
   const {
@@ -42,4 +44,4 @@ export async function obtenirSession(): Promise<Session> {
         }
       : null,
   };
-}
+});

@@ -1,6 +1,6 @@
-/* Service Worker OPENLU — notifications Web Push (app fermée) + cache PWA. */
+/* Service Worker OPENLU — notifications Web Push (app fermée) + installation PWA. */
 
-const CACHE = "openlu-v1";
+const CACHE = "openlu-v2";
 
 self.addEventListener("install", (evenement) => {
   evenement.waitUntil(
@@ -73,22 +73,28 @@ self.addEventListener("notificationclick", (evenement) => {
   );
 });
 
-/* --- Navigation : réseau d'abord, repli hors ligne --- */
+/* --- Navigations : réseau d'abord, repli hors ligne ---
+   On n'intercepte QUE les navigations de page. Les autres requêtes (JS, CSS,
+   images, données RSC) sont laissées au navigateur afin de ne jamais casser
+   le chargement de l'application en cas de pépin réseau. */
 self.addEventListener("fetch", (evenement) => {
   const requete = evenement.request;
-  if (requete.method !== "GET" || new URL(requete.url).origin !== self.location.origin) {
+  if (requete.method !== "GET" || requete.mode !== "navigate") return;
+
+  let origine;
+  try {
+    origine = new URL(requete.url).origin;
+  } catch {
     return;
   }
+  if (origine !== self.location.origin) return;
 
   evenement.respondWith(
     fetch(requete).catch(async () => {
       const cache = await caches.open(CACHE);
-      const miseEnCache = await cache.match(requete);
-      if (miseEnCache) return miseEnCache;
-      if (requete.mode === "navigate") {
-        return (await cache.match("/offline.html")) || Response.error();
-      }
-      return Response.error();
+      const horsLigne = await cache.match("/offline.html");
+      if (horsLigne) return horsLigne;
+      throw new Error("Réseau indisponible");
     })
   );
 });

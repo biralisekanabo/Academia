@@ -16,8 +16,17 @@ export async function proxy(request: NextRequest) {
   const cle = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !cle) return reponseIntl;
 
+  // Aucun cookie d'auth : rien à rafraîchir, on évite tout appel réseau.
+  const aUnCookieAuth = request.cookies
+    .getAll()
+    .some((c) => c.name.startsWith("sb-") && c.name.includes("auth-token"));
+  if (!aUnCookieAuth) return reponseIntl;
+
   // 2. Rafraîchissement de la session Supabase, en best-effort : une panne
   //    d'auth ne doit jamais casser le routage (erreur 500 middleware).
+  //    On utilise getSession() (lecture locale + refresh si expiré) plutôt que
+  //    getUser() (aller-retour réseau systématique) : la validation
+  //    authoritative est faite côté rendu par obtenirSession().
   try {
     let reponseSupabase = NextResponse.next({ request });
     const supabase = createServerClient<Database>(url, cle, {
@@ -37,7 +46,7 @@ export async function proxy(request: NextRequest) {
       },
     });
 
-    await supabase.auth.getUser();
+    await supabase.auth.getSession();
 
     reponseSupabase.cookies.getAll().forEach((biscuit) => {
       reponseIntl.cookies.set(biscuit);

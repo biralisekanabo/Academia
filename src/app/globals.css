@@ -335,6 +335,18 @@
   animation: charge 1.1s ease-in-out infinite;
 }
 
+/* Masque la barre de défilement sans empêcher le défilement */
+@utility sans-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+
 /* ---------- Animations & survols enrichis ---------- */
 
 /* Balayage lumineux au survol (boutons) */

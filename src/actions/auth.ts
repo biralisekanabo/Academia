@@ -2,15 +2,20 @@
 
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { redirect } from "@/i18n/navigation";
+import type { TypeRole } from "@/types/database";
 import {
   emailDepuisService,
   roleDepuisService,
   serviceValide,
 } from "@/utilitaires/service";
 
-export type ResultatConnexion = { erreur: string | null };
+export type ResultatConnexion = {
+  erreur: string | null;
+  role?: TypeRole | null;
+};
 
 export async function seConnecter(donnees: {
   service: string;
@@ -20,17 +25,27 @@ export async function seConnecter(donnees: {
   const t = await getTranslations({ locale, namespace: "auth" });
 
   const supabase = await creerClientServeur();
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: emailDepuisService(donnees.service),
     password: donnees.motDePasse,
   });
 
-  if (error) {
+  if (error || !data.user) {
     return { erreur: t("erreurIdentifiants") };
   }
 
-  redirect({ href: "/accueil", locale });
-  return { erreur: null };
+  const { data: profil } = await supabase
+    .from("openlu_profils")
+    .select("role")
+    .eq("id", data.user.id)
+    .maybeSingle();
+
+  if (!profil) {
+    await supabase.auth.signOut();
+    return { erreur: t("profilIntrouvable") };
+  }
+
+  return { erreur: null, role: profil.role };
 }
 
 export async function sInscrire(donnees: {
@@ -44,24 +59,39 @@ export async function sInscrire(donnees: {
     return { erreur: t("serviceInvalide") };
   }
 
-  const supabase = await creerClientServeur();
-  const { data, error } = await supabase.auth.signUp({
-    email: emailDepuisService(donnees.service),
+  const email = emailDepuisService(donnees.service);
+  const role = roleDepuisService(donnees.service);
+
+  // Compte créé via la clé service_role avec email_confirm : les adresses
+  // fictives `...@openlu.edu` ne peuvent pas recevoir de mail de
+  // confirmation, ce qui bloquait la connexion (« service déjà utilisé »
+  // à l'inscription puis service introuvable à la connexion).
+  const admin = creerClientAdmin();
+  const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
+    email,
     password: donnees.motDePasse,
-    options: {
-      data: {
-        nom: donnees.service.trim(),
-        role: roleDepuisService(donnees.service),
-      },
-    },
+    email_confirm: true,
+    user_metadata: { nom: donnees.service.trim(), role },
   });
 
-  if (error || (data.user && (data.user.identities?.length ?? 0) === 0)) {
-    return { erreur: t("serviceDejaUtilise") };
+  if (erreurAuth || !cree.user) {
+    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
+    return { erreur: deja ? t("serviceDejaUtilise") : t("erreurInscription") };
   }
 
-  redirect({ href: "/accueil", locale });
-  return { erreur: null };
+  // Établit la session (cookie) du nouveau compte pour être connecté
+  // immédiatement après l'inscription.
+  const supabase = await creerClientServeur();
+  const { error: erreurConnexion } = await supabase.auth.signInWithPassword({
+    email,
+    password: donnees.motDePasse,
+  });
+
+  if (erreurConnexion) {
+    return { erreur: t("erreurIdentifiants") };
+  }
+
+  return { erreur: null, role };
 }
 
 export async function seDeconnecter(): Promise<void> {

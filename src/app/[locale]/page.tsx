@@ -10,6 +10,9 @@ export default async function PageAccueil() {
   await connection();
   const locale = await getLocale();
   const session = await obtenirSession();
-  redirect({ href: session.utilisateur ? "/accueil" : "/connexion", locale });
+  redirect({
+    href: session.utilisateur && session.profil ? "/accueil" : "/connexion",
+    locale,
+  });
   return null;
 }

@@ -13,6 +13,8 @@ import { Bouton } from "@/composants/ui/bouton";
 import { Etiquette } from "@/composants/ui/etiquette";
 import { Saisie } from "@/composants/ui/saisie";
 import { useToast } from "@/composants/ui/toaster";
+import { cheminApresConnexion } from "@/constantes/navigation-portail";
+import { useRouter } from "@/i18n/navigation";
 
 type Donnees = { service: string; motDePasse: string };
 
@@ -20,6 +22,7 @@ export function FormulaireConnexion() {
   const t = useTranslations("auth");
   const tGlobal = useTranslations();
   const toasts = useToast();
+  const routeur = useRouter();
 
   const schema = useMemo(
     () =>
@@ -48,7 +51,10 @@ export function FormulaireConnexion() {
       if (resultat.erreur) {
         setError("root", { type: "serveur", message: resultat.erreur });
         toasts.erreur(tGlobal("toasts.erreur"), resultat.erreur);
+        return;
       }
+      routeur.push(cheminApresConnexion(resultat.role));
+      routeur.refresh();
     });
   });
 

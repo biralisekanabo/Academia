@@ -264,7 +264,7 @@ export function ListeEtudiants({
         sousTitre={t("etudiants.sousTitre")}
         actions={
           peutGerer ? (
-            <Link href="/etudiants/nouveau">
+            <Link href="/etudiants/nouveau" prefetch>
               <Bouton type="button">
                 <UserPlus className="size-4" />
                 {t("etudiants.nouveau")}
@@ -334,7 +334,7 @@ export function ListeEtudiants({
                           {inscrits.map((etudiant, index) => (
                             <TableauLigne
                               key={etudiant.id}
-                              className="ligne-animee animate-entree"
+                              className="animate-entree"
                               style={{ ["--delai" as string]: `${Math.min(index, 10) * 30}ms` }}
                             >
                               <TableauCellule className="font-mono text-xs text-muted-foreground">

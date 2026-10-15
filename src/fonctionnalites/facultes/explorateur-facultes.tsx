@@ -53,7 +53,7 @@ export function ExplorateurFacultes({
   return (
     <div className="space-y-6">
       {/* Sélecteur de faculté */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 lg:grid-cols-4">
         {facultes.map((f, index) => {
           const active = f.id === faculteId;
           const nombre = filieres.filter((x) => x.faculteId === f.id).length;
