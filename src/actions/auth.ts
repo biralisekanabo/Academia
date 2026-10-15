@@ -3,6 +3,7 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
+import { debloquerCompteBloque } from "@/bibliotheque/supabase/comptes";
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { redirect } from "@/i18n/navigation";
 import type { TypeRole } from "@/types/database";
@@ -67,16 +68,31 @@ export async function sInscrire(donnees: {
   // confirmation, ce qui bloquait la connexion (« service déjà utilisé »
   // à l'inscription puis service introuvable à la connexion).
   const admin = creerClientAdmin();
+  const metadata = { nom: donnees.service.trim(), role };
   const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
     email,
     password: donnees.motDePasse,
     email_confirm: true,
-    user_metadata: { nom: donnees.service.trim(), role },
+    user_metadata: metadata,
   });
 
-  if (erreurAuth || !cree.user) {
+  let idUtilisateur = cree?.user?.id ?? null;
+
+  if (erreurAuth || !idUtilisateur) {
     const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
-    return { erreur: deja ? t("serviceDejaUtilise") : t("erreurInscription") };
+
+    // Un compte resté non confirmé par l'ancien flux est débloqué au lieu
+    // de renvoyer « déjà utilisé » : personne ne peut s'en servir.
+    if (deja) {
+      idUtilisateur = await debloquerCompteBloque(admin, email, {
+        motDePasse: donnees.motDePasse,
+        metadata,
+      });
+    }
+
+    if (!idUtilisateur) {
+      return { erreur: deja ? t("serviceDejaUtilise") : t("erreurInscription") };
+    }
   }
 
   // Établit la session (cookie) du nouveau compte pour être connecté

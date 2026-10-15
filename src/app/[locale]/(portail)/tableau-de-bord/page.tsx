@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, LayoutDashboard, Users } from "lucide-react";
+﻿import { ArrowRight, BookOpen, LayoutDashboard, Users } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -18,8 +18,6 @@ import { navigationParRole } from "@/constantes/navigation-portail";
 import { Link } from "@/i18n/navigation";
 import type { TypeRole } from "@/types/database";
 import { formatDateLongue } from "@/utilitaires/format";
-
-export const instant = false;
 
 export default async function PageTableauDeBord() {
   await connection();
@@ -96,13 +94,13 @@ export default async function PageTableauDeBord() {
             delai={240}
             icone={() => <span className="text-sm font-bold">F</span>}
             valeur={encaissements}
-            libelle="Encaissé"
+            libelle="EncaissÃ©"
           />
         )}
       </div>
 
       <div className="grid gap-6 lg:grid-cols-5">
-        {/* Accès rapide */}
+        {/* AccÃ¨s rapide */}
         <section
           className="animate-entree rounded-2xl border bg-card p-5 shadow-sm lg:col-span-2"
           style={{ ["--delai" as string]: "120ms" }}
@@ -129,7 +127,7 @@ export default async function PageTableauDeBord() {
           </div>
         </section>
 
-        {/* Dernières inscriptions */}
+        {/* DerniÃ¨res inscriptions */}
         <section
           className="animate-entree rounded-2xl border bg-card p-5 shadow-sm lg:col-span-3"
           style={{ ["--delai" as string]: "200ms" }}
@@ -172,7 +170,7 @@ export default async function PageTableauDeBord() {
                     <TableauCellule>
                       {e.openlu_filieres?.nom}
                       <span className="text-xs text-muted-foreground">
-                        {" · "}
+                        {" Â· "}
                         {e.openlu_filieres?.openlu_facultes?.code}
                       </span>
                     </TableauCellule>

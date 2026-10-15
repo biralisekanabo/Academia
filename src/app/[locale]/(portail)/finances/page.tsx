@@ -1,3 +1,4 @@
+﻿import { Suspense } from "react";
 import { Landmark } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
@@ -29,9 +30,19 @@ const ONGLETS_VALIDES: OngletFinance[] = [
   "etudiants",
 ];
 
-export const instant = false;
+export default function PageFinances(props: ParametresPage) {
+  return (
+    <Suspense
+      fallback={
+        <div className="animate-apparition min-h-32" aria-hidden="true" />
+      }
+    >
+      <ContenuFinances searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
 
-export default async function PageFinances({
+async function ContenuFinances({
   searchParams,
 }: ParametresPage) {
   await connection();
@@ -108,7 +119,7 @@ export default async function PageFinances({
   const optionsFacultes: OptionRecherche[] =
     facultes.data?.map((f) => ({
       valeur: f.id,
-      libelle: `${f.code} — ${f.nom}`,
+      libelle: `${f.code} â€” ${f.nom}`,
       sousLibelle: f.nom,
     })) ?? [];
 
@@ -122,7 +133,7 @@ export default async function PageFinances({
   const optionsEtudiants: OptionRecherche[] =
     etudiants.data?.map((e) => ({
       valeur: e.id,
-      libelle: `${e.matricule} — ${e.openlu_profils?.prenom ?? ""} ${e.openlu_profils?.nom ?? ""}`,
+      libelle: `${e.matricule} â€” ${e.openlu_profils?.prenom ?? ""} ${e.openlu_profils?.nom ?? ""}`,
       sousLibelle: e.openlu_filieres?.nom,
     })) ?? [];
 

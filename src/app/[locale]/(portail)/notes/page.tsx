@@ -1,4 +1,4 @@
-import { ClipboardCheck } from "lucide-react";
+﻿import { ClipboardCheck } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -13,8 +13,6 @@ import {
   type InscriptionNote,
   type NoteLigne,
 } from "@/fonctionnalites/notes/espace-notes";
-
-export const instant = false;
 
 export default async function PageNotes() {
   await connection();

@@ -1,4 +1,4 @@
-import { GraduationCap } from "lucide-react";
+﻿import { GraduationCap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -6,8 +6,6 @@ import { connection } from "next/server";
 import { obtenirSession } from "@/bibliotheque/supabase/session";
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { FormulaireRejoindre } from "@/fonctionnalites/cours/formulaire-rejoindre";
-
-export const instant = false;
 
 export default async function PageRejoindre({
   params,

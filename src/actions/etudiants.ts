@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
 import { creerNotifications } from "@/bibliotheque/notifications";
 import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
+import { debloquerCompteBloque } from "@/bibliotheque/supabase/comptes";
 import {
   schemaEtudiant,
   schemaModificationEtudiant,
@@ -39,19 +40,32 @@ export async function inscrireEtudiant(
 
   // Création du compte Auth via la clé service_role : aucun e-mail de
   // confirmation n'est envoyé et la session courante n'est pas remplacée.
+  const metadata = { prenom, nom, role: "etudiant" };
   const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
     email,
     password: "openlu-initial",
     email_confirm: true,
-    user_metadata: { prenom, nom, role: "etudiant" },
+    user_metadata: metadata,
   });
 
-  if (erreurAuth || !cree.user) {
-    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
-    return { erreur: deja ? t("etudiants.emailDejaUtilise") : t("etudiants.erreurCompte") };
-  }
+  let idUtilisateur = cree?.user?.id ?? null;
 
-  const idUtilisateur = cree.user.id;
+  if (erreurAuth || !idUtilisateur) {
+    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
+
+    // Un compte resté non confirmé par l'ancien flux est débloqué au lieu
+    // de renvoyer « déjà utilisé » : personne ne peut s'en servir.
+    if (deja) {
+      idUtilisateur = await debloquerCompteBloque(admin, email, {
+        motDePasse: "openlu-initial",
+        metadata,
+      });
+    }
+
+    if (!idUtilisateur) {
+      return { erreur: deja ? t("etudiants.emailDejaUtilise") : t("etudiants.erreurCompte") };
+    }
+  }
 
   const { count } = await admin
     .from("openlu_etudiants")

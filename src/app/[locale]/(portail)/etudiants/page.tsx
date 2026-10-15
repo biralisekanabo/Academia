@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+﻿import { getLocale } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
@@ -7,8 +7,6 @@ import {
   ListeEtudiants,
   type EtudiantLigne,
 } from "@/fonctionnalites/etudiants/liste-etudiants";
-
-export const instant = false;
 
 export default async function PageEtudiants() {
   await connection();
@@ -41,13 +39,13 @@ export default async function PageEtudiants() {
     ]);
 
   if (resultatEtudiants.error) {
-    throw new Error("Impossible de charger la liste des étudiants.");
+    throw new Error("Impossible de charger la liste des Ã©tudiants.");
   }
   if (resultatFacultes.error) {
-    throw new Error("Impossible de charger les facultés des étudiants.");
+    throw new Error("Impossible de charger les facultÃ©s des Ã©tudiants.");
   }
   if (resultatFilieres.error) {
-    throw new Error("Impossible de charger les filières des étudiants.");
+    throw new Error("Impossible de charger les filiÃ¨res des Ã©tudiants.");
   }
 
   return (

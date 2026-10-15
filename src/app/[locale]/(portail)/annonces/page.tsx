@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from "next-intl/server";
+﻿import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
@@ -9,8 +9,6 @@ import {
   type AnnonceAdmin,
 } from "@/fonctionnalites/annonces/gestion-annonces";
 import { Megaphone } from "lucide-react";
-
-export const instant = false;
 
 export default async function PageGestionAnnonces() {
   await connection();
@@ -40,7 +38,7 @@ export default async function PageGestionAnnonces() {
             .from("openlu_annonces")
             .createSignedUrl(fichier.chemin, 60 * 60);
           if (erreurUrl) {
-            throw new Error("Impossible de créer un lien temporaire pour une pièce jointe.");
+            throw new Error("Impossible de crÃ©er un lien temporaire pour une piÃ¨ce jointe.");
           }
           return { ...fichier, url: url.signedUrl };
         })

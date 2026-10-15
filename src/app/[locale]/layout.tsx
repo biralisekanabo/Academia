@@ -1,13 +1,16 @@
 import type { Metadata, Viewport } from "next";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import "./../globals.css";
 import { FournisseurRequetes } from "@/composants/partages/fournisseur-requetes";
+import { FournisseurIntl } from "@/composants/partages/fournisseur-intl";
 import { ServiceWorker } from "@/composants/partages/service-worker";
 import { FournisseurToasts } from "@/composants/ui/toaster";
 import { configuration } from "@/i18n/configuration";
+import messagesEn from "../../../messages/en.json";
+import messagesFr from "../../../messages/fr.json";
 
 const DESCRIPTION =
   "Plateforme de gestion universitaire OpenLu : étudiants, cours, notes, finances et e-learning.";
@@ -50,8 +53,6 @@ export function generateStaticParams() {
   return configuration.locales.map((locale) => ({ locale }));
 }
 
-export const instant = false;
-
 export default async function LayoutRacine({
   children,
   params,
@@ -76,12 +77,15 @@ export default async function LayoutRacine({
               "try{var p=localStorage.getItem('openlu-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
           }}
         />
-        <NextIntlClientProvider>
+        <FournisseurIntl
+          locale={locale}
+          messages={locale === "en" ? messagesEn : messagesFr}
+        >
           <FournisseurRequetes>
             <FournisseurToasts>{children}</FournisseurToasts>
           </FournisseurRequetes>
           <ServiceWorker />
-        </NextIntlClientProvider>
+        </FournisseurIntl>
       </body>
     </html>
   );

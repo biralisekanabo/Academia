@@ -1,4 +1,4 @@
-import { getLocale } from "next-intl/server";
+﻿import { getLocale } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
@@ -7,8 +7,6 @@ import {
   ListeEnseignants,
   type EnseignantLigne,
 } from "@/fonctionnalites/enseignants/liste-enseignants";
-
-export const instant = false;
 
 export default async function PageEnseignants() {
   await connection();

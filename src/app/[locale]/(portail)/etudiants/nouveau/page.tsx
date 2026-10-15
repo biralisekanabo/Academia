@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server";
+﻿import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
@@ -6,8 +6,6 @@ import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import type { OptionRecherche } from "@/composants/partages/selecteur-recherche";
 import { Link } from "@/i18n/navigation";
 import { FormulaireEtudiant } from "@/fonctionnalites/etudiants/formulaire-etudiant";
-
-export const instant = false;
 
 export default async function PageNouvelEtudiant() {
   await connection();
@@ -30,7 +28,7 @@ export default async function PageNouvelEtudiant() {
   const optionsFacultes: OptionRecherche[] =
     facultes.data?.map((f) => ({
       valeur: f.id,
-      libelle: `${f.code} — ${f.nom}`,
+      libelle: `${f.code} â€” ${f.nom}`,
       sousLibelle: f.nom,
     })) ?? [];
 
@@ -53,7 +51,7 @@ export default async function PageNouvelEtudiant() {
           href="/etudiants"
           className="lien-anime mb-2 items-center gap-1 text-sm font-medium text-brand-2 hover:text-brand-3"
         >
-          ← {t("commun.retour")}
+          â† {t("commun.retour")}
         </Link>
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           {t("etudiants.nouveau")}

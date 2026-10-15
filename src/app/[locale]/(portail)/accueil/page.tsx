@@ -1,8 +1,6 @@
-import { connection } from "next/server";
+﻿import { connection } from "next/server";
 
 import { Logo } from "@/composants/partages/logo";
-
-export const instant = false;
 
 export default async function PageAccueil() {
   await connection();

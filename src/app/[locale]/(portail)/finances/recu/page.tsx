@@ -1,3 +1,4 @@
+﻿import { Suspense } from "react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -10,9 +11,19 @@ type ParametresPage = {
   searchParams: Promise<{ id?: string }>;
 };
 
-export const instant = false;
+export default function PageRecu(props: ParametresPage) {
+  return (
+    <Suspense
+      fallback={
+        <div className="animate-apparition min-h-32" aria-hidden="true" />
+      }
+    >
+      <ContenuRecu searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
 
-export default async function PageRecu({ searchParams }: ParametresPage) {
+async function ContenuRecu({ searchParams }: ParametresPage) {
   await connection();
   const t = await getTranslations();
   const locale = await getLocale();

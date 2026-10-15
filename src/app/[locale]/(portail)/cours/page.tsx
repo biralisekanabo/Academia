@@ -1,4 +1,4 @@
-import { BookOpen } from "lucide-react";
+﻿import { BookOpen } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -10,8 +10,6 @@ import {
   GestionCours,
   type CoursItem,
 } from "@/fonctionnalites/cours/gestion-cours";
-
-export const instant = false;
 
 export default async function PageCours() {
   await connection();
@@ -44,7 +42,7 @@ export default async function PageCours() {
         valeur: en.id,
         libelle: en.openlu_profils
           ? `${en.openlu_profils.prenom} ${en.openlu_profils.nom}`.trim()
-          : "—",
+          : "â€”",
       })) ?? [];
   }
 

@@ -6,6 +6,7 @@ import { getTranslations } from "next-intl/server";
 import { creerNotifications } from "@/bibliotheque/notifications";
 import { obtenirSession } from "@/bibliotheque/supabase/session";
 import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
+import { debloquerCompteBloque } from "@/bibliotheque/supabase/comptes";
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { emailDepuisService, serviceValide } from "@/utilitaires/service";
 
@@ -117,19 +118,32 @@ export async function rejoindreClasse(donnees: {
   if (!cours.inscription_ouverte) return { erreur: t("rejoindre.inscriptionFermee") };
 
   const email = emailDepuisService(service);
+  const metadata = { prenom, nom, role: "etudiant" };
   const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
     email,
     password: motDePasse,
     email_confirm: true,
-    user_metadata: { prenom, nom, role: "etudiant" },
+    user_metadata: metadata,
   });
 
-  if (erreurAuth || !cree.user) {
-    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
-    return { erreur: deja ? t("rejoindre.serviceDejaUtilise") : t("rejoindre.erreurCompte") };
-  }
+  let idUtilisateur = cree?.user?.id ?? null;
 
-  const idUtilisateur = cree.user.id;
+  if (erreurAuth || !idUtilisateur) {
+    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
+
+    // Un compte resté non confirmé par l'ancien flux est débloqué au lieu
+    // de renvoyer « déjà utilisé » : personne ne peut s'en servir.
+    if (deja) {
+      idUtilisateur = await debloquerCompteBloque(admin, email, {
+        motDePasse,
+        metadata,
+      });
+    }
+
+    if (!idUtilisateur) {
+      return { erreur: deja ? t("rejoindre.serviceDejaUtilise") : t("rejoindre.erreurCompte") };
+    }
+  }
   const matricule = await assurerDossierEtudiant(admin, idUtilisateur, donnees.matricule);
 
   if (!matricule) {

@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, Layers, MonitorPlay, User } from "lucide-react";
+﻿import { ArrowRight, BookOpen, Layers, MonitorPlay, User } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -7,8 +7,6 @@ import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { EnTetePage } from "@/composants/partages/en-tete-page";
 import { Insigne } from "@/composants/ui/insigne";
 import { Link } from "@/i18n/navigation";
-
-export const instant = false;
 
 type ClasseItem = {
   id: string;

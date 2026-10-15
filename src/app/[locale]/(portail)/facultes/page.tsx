@@ -1,4 +1,4 @@
-import { School } from "lucide-react";
+﻿import { School } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
@@ -10,8 +10,6 @@ import {
   type FaculteDeRecherche,
   type FiliereDeRecherche,
 } from "@/fonctionnalites/facultes/explorateur-facultes";
-
-export const instant = false;
 
 export default async function PageFacultes() {
   await connection();

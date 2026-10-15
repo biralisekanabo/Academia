@@ -1,12 +1,10 @@
-import { Bell } from "lucide-react";
+﻿import { Bell } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirSession } from "@/bibliotheque/supabase/session";
 import { EnTetePage } from "@/composants/partages/en-tete-page";
 import { EspaceNotifications } from "@/fonctionnalites/notifications/espace-notifications";
-
-export const instant = false;
 
 export default async function PageNotifications() {
   await connection();

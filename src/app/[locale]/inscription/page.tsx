@@ -1,12 +1,10 @@
-import { getLocale, getTranslations } from "next-intl/server";
+﻿import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { obtenirSession } from "@/bibliotheque/supabase/session";
 import { FormulaireInscription } from "@/fonctionnalites/auth/formulaire-inscription";
 import { DispositionAuth } from "@/fonctionnalites/auth/disposition-auth";
 import { Link, redirect } from "@/i18n/navigation";
-
-export const instant = false;
 
 export default async function PageInscription() {
   await connection();

@@ -1,12 +1,10 @@
-import { Megaphone } from "lucide-react";
+﻿import { Megaphone } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 import { connection } from "next/server";
 
 import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
 import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
 import { TableauPublicAnnonces } from "@/fonctionnalites/annonces/tableau-public-annonces";
-
-export const instant = false;
 
 export default async function PageAnnoncesPubliques() {
   await connection();
@@ -37,7 +35,7 @@ export default async function PageAnnoncesPubliques() {
             .from("openlu_annonces")
             .createSignedUrl(fichier.chemin, 60 * 60);
           if (erreurUrl) {
-            throw new Error("Impossible de créer un lien temporaire pour une pièce jointe.");
+            throw new Error("Impossible de crÃ©er un lien temporaire pour une piÃ¨ce jointe.");
           }
           return { ...fichier, url: url.signedUrl };
         })

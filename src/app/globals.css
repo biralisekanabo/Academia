@@ -238,8 +238,8 @@
 }
 
 @utility animate-entree {
-  animation: entree 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: var(--delai, 0ms);
+  animation: entree 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: min(var(--delai, 0ms), 80ms);
 }
 
 /* Reflet brillant qui traverse le logo / les insignes */
@@ -618,7 +618,7 @@
 }
 
 .transition-route {
-  animation: entree-route 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: entree-route 180ms cubic-bezier(0.16, 1, 0.3, 1) both;
   transform-origin: top center;
   will-change: opacity, transform;
 }

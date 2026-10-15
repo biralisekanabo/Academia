@@ -1,3 +1,4 @@
+﻿import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
@@ -11,15 +12,27 @@ import {
   type SupportClasse,
 } from "@/fonctionnalites/cours/espace-classe";
 
-export const instant = false;
-
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default async function PageClasse({
-  params,
-}: {
+type ParametresPage = {
   params: Promise<{ id: string }>;
-}) {
+};
+
+export default function PageClasse(props: ParametresPage) {
+  return (
+    <Suspense
+      fallback={
+        <div className="animate-apparition min-h-32" aria-hidden="true" />
+      }
+    >
+      <ContenuClasse params={props.params} />
+    </Suspense>
+  );
+}
+
+async function ContenuClasse({
+  params,
+}: ParametresPage) {
   await connection();
   const { id } = await params;
   if (!UUID.test(id)) notFound();
