@@ -112,8 +112,29 @@ export type Cours = {
   credits: number;
   semestre: number;
   enseignant_id: string | null;
+  jeton_inscription: string;
+  inscription_ouverte: boolean;
   cree_le: string;
   mis_a_jour: string;
+};
+
+export type MessageCours = {
+  id: string;
+  cours_id: string;
+  auteur_id: string | null;
+  contenu: string;
+  cree_le: string;
+};
+
+export type CoursParJeton = {
+  id: string;
+  code: string;
+  titre: string;
+  description: string | null;
+  credits: number;
+  semestre: number;
+  enseignant: string;
+  ouverte: boolean;
 };
 
 export type InscriptionCours = {
@@ -286,6 +307,7 @@ export type Database = {
       openlu_cours: { Row: Cours; Insert: Partial<Cours>; Update: Partial<Cours>; Relationships: [ { foreignKeyName: "openlu_cours_enseignant_id_fkey"; columns: ["enseignant_id"]; isOneToOne: false; referencedRelation: "openlu_enseignants"; referencedColumns: ["id"] } ] };
       openlu_inscriptions_cours: { Row: InscriptionCours; Insert: Partial<InscriptionCours>; Update: Partial<InscriptionCours>; Relationships: [ { foreignKeyName: "openlu_inscriptions_cours_etudiant_id_fkey"; columns: ["etudiant_id"]; isOneToOne: false; referencedRelation: "openlu_etudiants"; referencedColumns: ["id"] }, { foreignKeyName: "openlu_inscriptions_cours_cours_id_fkey"; columns: ["cours_id"]; isOneToOne: false; referencedRelation: "openlu_cours"; referencedColumns: ["id"] } ] };
       openlu_seances: { Row: Seance; Insert: Partial<Seance>; Update: Partial<Seance>; Relationships: [ { foreignKeyName: "openlu_seances_cours_id_fkey"; columns: ["cours_id"]; isOneToOne: false; referencedRelation: "openlu_cours"; referencedColumns: ["id"] } ] };
+      openlu_messages_cours: { Row: MessageCours; Insert: Partial<MessageCours>; Update: Partial<MessageCours>; Relationships: [ { foreignKeyName: "openlu_messages_cours_cours_id_fkey"; columns: ["cours_id"]; isOneToOne: false; referencedRelation: "openlu_cours"; referencedColumns: ["id"] }, { foreignKeyName: "openlu_messages_cours_auteur_id_fkey"; columns: ["auteur_id"]; isOneToOne: false; referencedRelation: "openlu_profils"; referencedColumns: ["id"] } ] };
       openlu_evaluations: { Row: Evaluation; Insert: Partial<Evaluation>; Update: Partial<Evaluation>; Relationships: [ { foreignKeyName: "openlu_evaluations_cours_id_fkey"; columns: ["cours_id"]; isOneToOne: false; referencedRelation: "openlu_cours"; referencedColumns: ["id"] } ] };
       openlu_notes: { Row: Note; Insert: Partial<Note>; Update: Partial<Note>; Relationships: [ { foreignKeyName: "openlu_notes_evaluation_id_fkey"; columns: ["evaluation_id"]; isOneToOne: false; referencedRelation: "openlu_evaluations"; referencedColumns: ["id"] }, { foreignKeyName: "openlu_notes_etudiant_id_fkey"; columns: ["etudiant_id"]; isOneToOne: false; referencedRelation: "openlu_etudiants"; referencedColumns: ["id"] } ] };
       openlu_frais_scolarite: { Row: FraisScolarite; Insert: Partial<FraisScolarite>; Update: Partial<FraisScolarite>; Relationships: [ { foreignKeyName: "openlu_frais_scolarite_faculte_id_fkey"; columns: ["faculte_id"]; isOneToOne: false; referencedRelation: "openlu_facultes"; referencedColumns: ["id"] }, { foreignKeyName: "openlu_frais_scolarite_filiere_id_fkey"; columns: ["filiere_id"]; isOneToOne: false; referencedRelation: "openlu_filieres"; referencedColumns: ["id"] } ] };
@@ -307,6 +329,7 @@ export type Database = {
       openlu_est_reception: { Args: Record<string, never>; Returns: boolean };
       openlu_est_finance: { Args: Record<string, never>; Returns: boolean };
       openlu_est_administratif: { Args: Record<string, never>; Returns: boolean };
+      openlu_cours_par_jeton: { Args: { p_jeton: string }; Returns: CoursParJeton[] };
     };
     Enums: {
       openlu_type_role: { Enum: TypeRole };

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, Layers, Plus, Trash2, User } from "lucide-react";
+import { ArrowRight, BookOpen, Layers, Plus, Trash2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 
@@ -11,6 +11,7 @@ import { Bouton } from "@/composants/ui/bouton";
 import { Insigne } from "@/composants/ui/insigne";
 import { useToast } from "@/composants/ui/toaster";
 import { FormulaireCours } from "@/fonctionnalites/cours/formulaire-cours";
+import { Link } from "@/i18n/navigation";
 import type { TypeRole } from "@/types/database";
 import { cn } from "@/utilitaires/cn";
 
@@ -118,7 +119,12 @@ export function GestionCours({
                       </div>
                     </div>
                     <div className="min-w-0">
-                      <h3 className="truncate font-semibold">{c.titre}</h3>
+                      <Link
+                        href={`/cours/${c.id}`}
+                        className="block truncate font-semibold transition-colors hover:text-brand-2"
+                      >
+                        {c.titre}
+                      </Link>
                       {c.description && (
                         <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
                           {c.description}
@@ -147,6 +153,13 @@ export function GestionCours({
                         )}
                       </span>
                     </div>
+                    <Link
+                      href={`/cours/${c.id}`}
+                      className="lien-anime inline-flex w-fit items-center gap-1.5 text-xs font-medium"
+                    >
+                      {t("cours.ouvrirClasse")}
+                      <ArrowRight className="size-3.5" />
+                    </Link>
                   </article>
                 );
               })}
