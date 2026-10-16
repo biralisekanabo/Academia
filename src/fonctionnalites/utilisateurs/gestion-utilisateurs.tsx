@@ -24,7 +24,9 @@ import {
 import { Champ } from "@/composants/partages/champ-formulaire";
 import { Modale } from "@/composants/partages/modale";
 import { Bouton } from "@/composants/ui/bouton";
+import { Etiquette } from "@/composants/ui/etiquette";
 import { Insigne } from "@/composants/ui/insigne";
+import { Saisie } from "@/composants/ui/saisie";
 import {
   Tableau,
   TableauCellule,
@@ -306,6 +308,11 @@ function ModaleUtilisateur({
   const toasts = useToast();
   const [enCours, demarrer] = useTransition();
   const [erreur, setErreur] = useState<string | null>(null);
+  const [voirMotDePasse, setVoirMotDePasse] = useState(false);
+  const [identifiants, setIdentifiants] = useState<{
+    identifiant: string;
+    motDePasse?: string;
+  } | null>(null);
 
   const [nomComplet, setNomComplet] = useState(utilisateur?.nom_complet ?? "");
   const [nomUtilisateur, setNomUtilisateur] = useState(utilisateur?.nom_utilisateur ?? "");
@@ -334,6 +341,7 @@ function ModaleUtilisateur({
           setErreur(r.erreur);
           return toasts.erreur(t("toasts.erreur"), r.erreur);
         }
+        onReussi();
       } else {
         const r = await creerUtilisateur({
           nomComplet,
@@ -348,15 +356,61 @@ function ModaleUtilisateur({
           setErreur(r.erreur);
           return toasts.erreur(t("toasts.erreur"), r.erreur);
         }
+        toasts.succes(t("toasts.succes"), t("utilisateurs.enregistre"));
+        if (r.identifiant) {
+          setIdentifiants({ identifiant: r.identifiant, motDePasse: r.motDePasse });
+        } else {
+          onReussi();
+        }
       }
-      onReussi();
     });
+  }
+
+  if (identifiants) {
+    return (
+      <Modale
+        ouvert
+        titre={t("utilisateurs.identifiantsTitre")}
+        sousTitre={t("utilisateurs.identifiantsAide")}
+        onFermer={onReussi}
+      >
+        <div className="space-y-4">
+          <div className="space-y-3 rounded-xl border bg-muted/40 p-4">
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                {t("utilisateurs.identifiant")}
+              </p>
+              <p className="font-mono text-sm break-all">{identifiants.identifiant}</p>
+            </div>
+            {identifiants.motDePasse && (
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  {t("utilisateurs.nouveauMotDePasse")}
+                </p>
+                <p className="font-mono text-sm break-all">
+                  {identifiants.motDePasse}
+                </p>
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("utilisateurs.identifiantsNote")}
+          </p>
+          <div className="flex justify-end gap-2 border-t pt-4">
+            <Bouton type="button" onClick={onReussi}>
+              {t("commun.terminer")}
+            </Bouton>
+          </div>
+        </div>
+      </Modale>
+    );
   }
 
   return (
     <Modale
       ouvert
       titre={utilisateur ? t("utilisateurs.modifierTitre") : t("utilisateurs.nouveau")}
+      sousTitre={utilisateur ? undefined : t("utilisateurs.optionnelsAide")}
       onFermer={onFermer}
     >
       <form onSubmit={soumettre} className="space-y-4">
@@ -365,54 +419,105 @@ function ModaleUtilisateur({
             {erreur}
           </p>
         )}
-        <Champ label={t("utilisateurs.nom")} value={nomComplet} onChange={(e) => setNomComplet(e.target.value)} required />
+        <Champ
+          label={t("utilisateurs.nom")}
+          value={nomComplet}
+          onChange={(e) => setNomComplet(e.target.value)}
+          optionnel={!utilisateur}
+          placeholder={t("utilisateurs.nomPlaceholder")}
+        />
         {!utilisateur && (
           <Champ
             label={t("utilisateurs.identifiant")}
             value={nomUtilisateur}
             onChange={(e) => setNomUtilisateur(e.target.value)}
-            required
+            optionnel
+            placeholder={t("utilisateurs.identifiantPlaceholder")}
           />
         )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <Champ label={t("etablissements.email")} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Champ label={t("etablissements.telephone")} value={telephone} onChange={(e) => setTelephone(e.target.value)} required />
+          <Champ
+            label={t("etablissements.email")}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            optionnel
+          />
+          <Champ
+            label={t("etablissements.telephone")}
+            value={telephone}
+            onChange={(e) => setTelephone(e.target.value)}
+            optionnel
+          />
         </div>
         {!utilisateur && (
-          <Champ
-            label={t("auth.motDePasse")}
-            type="password"
-            value={motDePasse}
-            onChange={(e) => setMotDePasse(e.target.value)}
-            required
-          />
+          <div className="space-y-2">
+            <div className="flex items-center justify-between gap-2">
+              <Etiquette className="flex items-center gap-1.5">
+                <span>{t("auth.motDePasse")}</span>
+                <span className="text-xs font-normal text-muted-foreground">
+                  ({t("commun.optionnel")})
+                </span>
+              </Etiquette>
+              <button
+                type="button"
+                onClick={() => setVoirMotDePasse((v) => !v)}
+                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {voirMotDePasse ? t("commun.masquer") : t("commun.afficher")}
+              </button>
+            </div>
+            <Saisie
+              type={voirMotDePasse ? "text" : "password"}
+              value={motDePasse}
+              onChange={(e) => setMotDePasse(e.target.value)}
+              placeholder={t("utilisateurs.motDePasseGenere")}
+            />
+            <p className="text-xs text-muted-foreground">
+              {t("utilisateurs.motDePasseAide")}
+            </p>
+          </div>
         )}
 
         {!utilisateur && (
           <>
             <div className="space-y-2">
-              <p className="text-sm font-medium">{t("utilisateurs.roles")}</p>
-              <div className="flex flex-wrap gap-2">
-                {roles.map((role) => (
-                  <button
-                    key={role.id}
-                    type="button"
-                    onClick={() => basculer(roleIds, setRoleIds, role.id)}
-                    className={
-                      "rounded-full border px-3 py-1 text-xs transition-colors " +
-                      (roleIds.includes(role.id)
-                        ? "degrade-brand border-0 text-white"
-                        : "hover:bg-accent")
-                    }
-                  >
-                    {role.nom}
-                  </button>
-                ))}
-              </div>
+              <p className="text-sm font-medium">
+                {t("utilisateurs.roles")}
+                <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                  ({t("commun.optionnel")})
+                </span>
+              </p>
+              {roles.length === 0 ? (
+                <p className="text-sm text-muted-foreground">{t("utilisateurs.aucunRole")}</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {roles.map((role) => (
+                    <button
+                      key={role.id}
+                      type="button"
+                      onClick={() => basculer(roleIds, setRoleIds, role.id)}
+                      className={
+                        "rounded-full border px-3 py-1.5 text-xs transition-colors " +
+                        (roleIds.includes(role.id)
+                          ? "degrade-brand border-0 text-white"
+                          : "hover:bg-accent")
+                      }
+                    >
+                      {role.nom}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             {succursales.length > 0 && (
               <div className="space-y-2">
-                <p className="text-sm font-medium">{t("utilisateurs.succursales")}</p>
+                <p className="text-sm font-medium">
+                  {t("utilisateurs.succursales")}
+                  <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                    ({t("commun.optionnel")})
+                  </span>
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {succursales.map((s) => (
                     <button
@@ -420,7 +525,7 @@ function ModaleUtilisateur({
                       type="button"
                       onClick={() => basculer(succursaleIds, setSuccursaleIds, s.id)}
                       className={
-                        "rounded-full border px-3 py-1 text-xs transition-colors " +
+                        "rounded-full border px-3 py-1.5 text-xs transition-colors " +
                         (succursaleIds.includes(s.id)
                           ? "degrade-brand border-0 text-white"
                           : "hover:bg-accent")
@@ -435,7 +540,7 @@ function ModaleUtilisateur({
           </>
         )}
 
-        <div className="flex justify-end gap-2 border-t pt-4">
+        <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
           <Bouton type="button" variante="contour" onClick={onFermer}>
             {t("commun.annuler")}
           </Bouton>

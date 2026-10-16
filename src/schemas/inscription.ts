@@ -1,11 +1,20 @@
 import { z } from "zod";
 
+/** Identifiant facultatif : accepte "", null, NaN et les nombres valides. */
+const idOptionnel = z.preprocess(
+  (v) =>
+    v === "" || v === null || v === undefined || Number.isNaN(Number(v))
+      ? undefined
+      : v,
+  z.coerce.number().int().positive().optional()
+);
+
 export const schemaInscription = z.object({
   etudiant_id: z.coerce.number().int().positive("L'étudiant est requis."),
-  annee_academique_id: z.coerce.number().int().positive("L'année académique est requise."),
-  faculte_id: z.coerce.number().int().positive("La faculté est requise."),
-  domaine_id: z.coerce.number().int().positive("Le domaine est requis."),
-  promotion_id: z.coerce.number().int().positive("La promotion est requise."),
+  annee_academique_id: idOptionnel,
+  faculte_id: idOptionnel,
+  domaine_id: idOptionnel,
+  promotion_id: idOptionnel,
   numero_inscription: z
     .string()
     .max(40)

@@ -68,10 +68,10 @@ export async function creerEtudiant(
     .insert({
       entreprise_id: session.entrepriseId,
       matricule,
-      nom: d.nom.trim(),
+      nom: d.nom?.trim() || "Étudiant",
       postnom: nettoyer(d.postnom),
-      prenom: d.prenom.trim(),
-      sexe: d.sexe,
+      prenom: d.prenom?.trim() || "",
+      sexe: d.sexe ?? "M",
       date_naissance: nettoyer(d.date_naissance),
       lieu_naissance: nettoyer(d.lieu_naissance),
       nationalite: nettoyer(d.nationalite) ?? "Congolaise",
@@ -122,10 +122,10 @@ export async function modifierEtudiant(
     .from("etudiants")
     .update({
       matricule: d.matricule?.trim() || undefined,
-      nom: d.nom.trim(),
+      nom: d.nom?.trim() || "Étudiant",
       postnom: nettoyer(d.postnom),
-      prenom: d.prenom.trim(),
-      sexe: d.sexe,
+      prenom: d.prenom?.trim() || "",
+      sexe: d.sexe ?? "M",
       date_naissance: nettoyer(d.date_naissance),
       lieu_naissance: nettoyer(d.lieu_naissance),
       nationalite: nettoyer(d.nationalite),

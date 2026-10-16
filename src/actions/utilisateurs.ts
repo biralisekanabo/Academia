@@ -5,6 +5,11 @@ import bcrypt from "bcryptjs";
 
 import { exigerPermission, exigerSession } from "@/bibliotheque/autorisation";
 import { bd } from "@/bibliotheque/bd";
+import {
+  baseIdentifiant,
+  genererMotDePasse,
+  identifiantUnique,
+} from "@/bibliotheque/identifiants";
 import { perimetreEntreprise } from "@/bibliotheque/portee";
 import {
   schemaAttributionRoles,
@@ -15,7 +20,15 @@ import {
 } from "@/schemas/utilisateur";
 import type { Utilisateur } from "@/types/base";
 
-export type Resultat = { erreur?: string; ok?: boolean; id?: number };
+export type Resultat = {
+  erreur?: string;
+  ok?: boolean;
+  id?: number;
+  /** Identifiant généré automatiquement (si non fourni). */
+  identifiant?: string;
+  /** Mot de passe généré automatiquement (si non fourni). */
+  motDePasse?: string;
+};
 
 function nettoyer(valeur?: string): string | null {
   const v = valeur?.trim();
@@ -39,11 +52,11 @@ async function utilisateurDansPerimetre(
 }
 
 export async function creerUtilisateur(donnees: {
-  nomComplet: string;
-  nomUtilisateur: string;
+  nomComplet?: string;
+  nomUtilisateur?: string;
   email?: string;
   telephone?: string;
-  motDePasse: string;
+  motDePasse?: string;
   roleIds: number[];
   succursaleIds: number[];
   succursaleId?: number;
@@ -63,14 +76,31 @@ export async function creerUtilisateur(donnees: {
   }
 
   const client = bd();
-  const hash = await bcrypt.hash(parse.data.motDePasse, 12);
+
+  // Tous les champs sont facultatifs : on génère ce qui manque.
+  const motDePasse = parse.data.motDePasse?.trim() || genererMotDePasse();
+  const idBase = baseIdentifiant([
+    parse.data.nomUtilisateur,
+    parse.data.email,
+    parse.data.nomComplet,
+  ]);
+  const nomUtilisateur = parse.data.nomUtilisateur
+    ? await identifiantUnique(baseIdentifiant([parse.data.nomUtilisateur]))
+    : await identifiantUnique(idBase);
+  const nomComplet =
+    parse.data.nomComplet?.trim() ||
+    nomUtilisateur ||
+    nettoyer(parse.data.email) ||
+    "Utilisateur";
+
+  const hash = await bcrypt.hash(motDePasse, 12);
 
   const { data: utilisateur, error } = await client
     .from("utilisateurs")
     .insert({
       entreprise_id: entrepriseCible,
-      nom_complet: parse.data.nomComplet.trim(),
-      nom_utilisateur: parse.data.nomUtilisateur.trim(),
+      nom_complet: nomComplet,
+      nom_utilisateur: nomUtilisateur,
       email: nettoyer(parse.data.email),
       telephone: nettoyer(parse.data.telephone),
       password_hash: hash,
@@ -95,7 +125,12 @@ export async function creerUtilisateur(donnees: {
 
   await journaliser(session.entrepriseId, session.utilisateurId, "CREATION_UTILISATEUR", utilisateur.id);
   revalidatePath("/[locale]/utilisateurs", "page");
-  return { ok: true, id: utilisateur.id };
+  return {
+    ok: true,
+    id: utilisateur.id,
+    identifiant: nomUtilisateur,
+    motDePasse: parse.data.motDePasse?.trim() ? undefined : motDePasse,
+  };
 }
 
 export async function modifierUtilisateur(donnees: {
@@ -118,7 +153,7 @@ export async function modifierUtilisateur(donnees: {
   const { error } = await bd()
     .from("utilisateurs")
     .update({
-      nom_complet: parse.data.nomComplet.trim(),
+      nom_complet: parse.data.nomComplet ?? cible.nom_complet,
       email: nettoyer(parse.data.email),
       telephone: nettoyer(parse.data.telephone),
     })

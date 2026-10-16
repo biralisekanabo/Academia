@@ -4,15 +4,18 @@ import { cn } from "@/utilitaires/cn";
 
 function Tableau({
   className,
+  responsif = true,
   ...props
-}: React.ComponentProps<"table">) {
+}: React.ComponentProps<"table"> & { responsif?: boolean }) {
   return (
     <div
       data-slot="tableau-conteneur"
+      data-responsif={responsif ? "tableau-mobile" : undefined}
       className="relative w-full overflow-x-auto"
     >
       <table
         data-slot="tableau"
+        data-responsif={responsif ? "oui" : undefined}
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />

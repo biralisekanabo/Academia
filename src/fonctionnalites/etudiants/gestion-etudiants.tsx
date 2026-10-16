@@ -2,12 +2,15 @@
 
 import { useMemo, useState, useTransition } from "react";
 import {
+  FileText,
   LoaderCircle,
   Pencil,
+  Phone,
   Plus,
   Trash2,
   Upload,
   UserRound,
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -20,7 +23,12 @@ import {
 } from "@/actions/etudiants";
 import { Modale } from "@/composants/partages/modale";
 import { Bouton } from "@/composants/ui/bouton";
-import { Champ, ChampSelecteur, ChampZoneTexte } from "@/composants/partages/champ-formulaire";
+import {
+  Champ,
+  ChampSelecteur,
+  ChampZoneTexte,
+  SectionFormulaire,
+} from "@/composants/partages/champ-formulaire";
 import { Insigne } from "@/composants/ui/insigne";
 import {
   Tableau,
@@ -193,9 +201,9 @@ function lireBase64(fichier: File): Promise<string> {
 
 type DonneesForm = {
   matricule?: string;
-  nom: string;
+  nom?: string;
   postnom?: string;
-  prenom: string;
+  prenom?: string;
   sexe: "M" | "F";
   date_naissance?: string;
   lieu_naissance?: string;
@@ -235,7 +243,7 @@ function FormulaireEtudiant({
     sexe: etudiant?.sexe ?? "M",
     date_naissance: etudiant?.date_naissance ?? "",
     lieu_naissance: etudiant?.lieu_naissance ?? "",
-    nationalite: etudiant?.nationalite ?? "Congolaise",
+    nationalite: etudiant?.nationalite ?? "",
     adresse: etudiant?.adresse ?? "",
     telephone: etudiant?.telephone ?? "",
     email: etudiant?.email ?? "",
@@ -254,71 +262,105 @@ function FormulaireEtudiant({
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSoumettre(etat); }} className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.matricule")} value={etat.matricule} onChange={(e) => maj("matricule", e.target.value)} placeholder={t("etudiants.matriculeAide")} />
-        <ChampSelecteur label={t("etudiants.sexe")} className="w-full" value={etat.sexe} onChange={(e) => maj("sexe", e.target.value)}>
-          <option value="M">{t("etudiants.masculin")}</option>
-          <option value="F">{t("etudiants.feminin")}</option>
-        </ChampSelecteur>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <Champ label={t("etudiants.nom")} value={etat.nom} onChange={(e) => maj("nom", e.target.value)} required />
-        <Champ label={t("etudiants.postnom")} value={etat.postnom} onChange={(e) => maj("postnom", e.target.value)} required />
-        <Champ label={t("etudiants.prenom")} value={etat.prenom} onChange={(e) => maj("prenom", e.target.value)} required />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.dateNaissance")} type="date" value={etat.date_naissance} onChange={(e) => maj("date_naissance", e.target.value)} required />
-        <Champ label={t("etudiants.lieuNaissance")} value={etat.lieu_naissance} onChange={(e) => maj("lieu_naissance", e.target.value)} required />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nationalite")} value={etat.nationalite} onChange={(e) => maj("nationalite", e.target.value)} required />
-        <Champ label={t("etudiants.telephone")} value={etat.telephone} onChange={(e) => maj("telephone", e.target.value)} required />
-      </div>
-      <Champ label={t("etablissements.email")} type="email" value={etat.email} onChange={(e) => maj("email", e.target.value)} required />
-      <Champ label={t("etudiants.adresse")} value={etat.adresse} onChange={(e) => maj("adresse", e.target.value)} required />
-      <div className="grid gap-4 sm:grid-cols-2">
-        <ChampSelecteur label={t("etudiants.typePiece")} className="w-full" value={etat.type_piece} onChange={(e) => maj("type_piece", e.target.value)} required>
-          <option value="">—</option>
-          {TYPES_PIECE.map((p) => (
-            <option key={p} value={p}>{p}</option>
-          ))}
-        </ChampSelecteur>
-        <Champ label={t("etudiants.numeroPiece")} value={etat.numero_piece} onChange={(e) => maj("numero_piece", e.target.value)} required />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nomPere")} value={etat.nom_pere} onChange={(e) => maj("nom_pere", e.target.value)} required />
-        <Champ label={t("etudiants.nomMere")} value={etat.nom_mere} onChange={(e) => maj("nom_mere", e.target.value)} required />
-      </div>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nomTuteur")} value={etat.nom_tuteur} onChange={(e) => maj("nom_tuteur", e.target.value)} required />
-        <Champ label={t("etudiants.telephoneTuteur")} value={etat.telephone_tuteur} onChange={(e) => maj("telephone_tuteur", e.target.value)} required />
-      </div>
-      <ChampZoneTexte label={t("etudiants.observations")} value={etat.observations} onChange={(e) => maj("observations", e.target.value)} />
+      <p className="rounded-lg border border-dashed bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+        {t("etudiants.optionnelsAide")}
+      </p>
 
-      {etudiant && (
-        <div className="flex items-center gap-3 rounded-xl border border-dashed p-3">
-          <UserRound className="size-8 text-muted-foreground" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">{t("etudiants.photo")}</p>
-            <p className="text-xs text-muted-foreground">{t("etudiants.photoAide")}</p>
-          </div>
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors hover:bg-accent">
-            <Upload className="size-4" />
-            {t("etudiants.televerser")}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) onPhoto(etudiant.id, f);
-              }}
-            />
-          </label>
+      <SectionFormulaire icone={<UserRound className="size-5" />} titre={t("etudiants.sectionIdentite")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ
+            label={t("etudiants.matricule")}
+            value={etat.matricule ?? ""}
+            onChange={(e) => maj("matricule", e.target.value)}
+            placeholder={t("etudiants.matriculeAide")}
+            optionnel
+          />
+          <ChampSelecteur
+            label={t("etudiants.sexe")}
+            className="w-full"
+            value={etat.sexe}
+            onChange={(e) => maj("sexe", e.target.value)}
+            optionnel
+          >
+            <option value="M">{t("etudiants.masculin")}</option>
+            <option value="F">{t("etudiants.feminin")}</option>
+          </ChampSelecteur>
         </div>
-      )}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <Champ label={t("etudiants.nom")} value={etat.nom ?? ""} onChange={(e) => maj("nom", e.target.value)} optionnel />
+          <Champ label={t("etudiants.postnom")} value={etat.postnom ?? ""} onChange={(e) => maj("postnom", e.target.value)} optionnel />
+          <Champ label={t("etudiants.prenom")} value={etat.prenom ?? ""} onChange={(e) => maj("prenom", e.target.value)} optionnel />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label={t("etudiants.dateNaissance")} type="date" value={etat.date_naissance ?? ""} onChange={(e) => maj("date_naissance", e.target.value)} optionnel />
+          <Champ label={t("etudiants.lieuNaissance")} value={etat.lieu_naissance ?? ""} onChange={(e) => maj("lieu_naissance", e.target.value)} optionnel />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label={t("etudiants.nationalite")} value={etat.nationalite ?? ""} onChange={(e) => maj("nationalite", e.target.value)} optionnel />
+          <ChampSelecteur
+            label={t("etudiants.typePiece")}
+            className="w-full"
+            value={etat.type_piece ?? ""}
+            onChange={(e) => maj("type_piece", e.target.value)}
+            optionnel
+          >
+            <option value="">—</option>
+            {TYPES_PIECE.map((p) => (
+              <option key={p} value={p}>{p}</option>
+            ))}
+          </ChampSelecteur>
+        </div>
+        <Champ label={t("etudiants.numeroPiece")} value={etat.numero_piece ?? ""} onChange={(e) => maj("numero_piece", e.target.value)} optionnel />
+      </SectionFormulaire>
 
-      <div className="flex justify-end gap-2 border-t pt-4">
+      <SectionFormulaire icone={<Phone className="size-5" />} titre={t("etudiants.sectionCoordonnees")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label={t("etudiants.telephone")} value={etat.telephone ?? ""} onChange={(e) => maj("telephone", e.target.value)} optionnel />
+          <Champ label={t("etablissements.email")} type="email" value={etat.email ?? ""} onChange={(e) => maj("email", e.target.value)} optionnel />
+        </div>
+        <Champ label={t("etudiants.adresse")} value={etat.adresse ?? ""} onChange={(e) => maj("adresse", e.target.value)} optionnel />
+      </SectionFormulaire>
+
+      <SectionFormulaire icone={<Users className="size-5" />} titre={t("etudiants.sectionTuteurs")}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label={t("etudiants.nomPere")} value={etat.nom_pere ?? ""} onChange={(e) => maj("nom_pere", e.target.value)} optionnel />
+          <Champ label={t("etudiants.nomMere")} value={etat.nom_mere ?? ""} onChange={(e) => maj("nom_mere", e.target.value)} optionnel />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Champ label={t("etudiants.nomTuteur")} value={etat.nom_tuteur ?? ""} onChange={(e) => maj("nom_tuteur", e.target.value)} optionnel />
+          <Champ label={t("etudiants.telephoneTuteur")} value={etat.telephone_tuteur ?? ""} onChange={(e) => maj("telephone_tuteur", e.target.value)} optionnel />
+        </div>
+        <Champ label={t("etudiants.contactUrgence")} value={etat.contact_urgence ?? ""} onChange={(e) => maj("contact_urgence", e.target.value)} optionnel />
+      </SectionFormulaire>
+
+      <SectionFormulaire icone={<FileText className="size-5" />} titre={t("etudiants.sectionDivers")}>
+        <ChampZoneTexte label={t("etudiants.observations")} value={etat.observations ?? ""} onChange={(e) => maj("observations", e.target.value)} optionnel />
+
+        {etudiant && (
+          <div className="flex flex-col gap-3 rounded-xl border border-dashed p-3 sm:flex-row sm:items-center">
+            <UserRound className="size-8 text-muted-foreground" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">{t("etudiants.photo")}</p>
+              <p className="text-xs text-muted-foreground">{t("etudiants.photoAide")}</p>
+            </div>
+            <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors hover:bg-accent">
+              <Upload className="size-4" />
+              {t("etudiants.televerser")}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) onPhoto(etudiant.id, f);
+                }}
+              />
+            </label>
+          </div>
+        )}
+      </SectionFormulaire>
+
+      <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
         <Bouton type="button" variante="contour" onClick={onFermer}>
           {t("commun.annuler")}
         </Bouton>

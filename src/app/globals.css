@@ -600,6 +600,63 @@
   box-shadow: inset 2px 0 color-mix(in oklch, var(--brand-2) 65%, transparent);
 }
 
+/* ---------- Tables responsives ---------- */
+@media (max-width: 639px) {
+  [data-tableau-mobile="tableau-mobile"] table {
+    display: block;
+    width: 100%;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] thead {
+    display: none;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] tbody {
+    display: block;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-ligne"] {
+    display: block;
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: calc(var(--radius) + 2px);
+    background: var(--card);
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-cellule"] {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-cellule"]:last-of-type {
+    border-bottom: none;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-cellule"]::before {
+    content: attr(data-libelle);
+    font-weight: 600;
+    color: var(--muted-foreground);
+    text-align: left;
+    flex-shrink: 0;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-cellule"] > * {
+    flex: 1;
+    text-align: right;
+  }
+
+  [data-tableau-mobile="tableau-mobile"] [data-slot="tableau-cellule"]:has(> * > button) > * {
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+}
+
 [data-slot="saisie"]:hover,
 [data-slot="selecteur"]:hover,
 [data-slot="zone-texte"]:hover {

@@ -1,24 +1,48 @@
 "use client";
 
+import { useTranslations } from "next-intl";
+
 import { Etiquette } from "@/composants/ui/etiquette";
 import { Saisie } from "@/composants/ui/saisie";
 import { Selecteur } from "@/composants/ui/selecteur";
 import { ZoneTexte } from "@/composants/ui/zone-texte";
 import { cn } from "@/utilitaires/cn";
 
+function Libelle({
+  children,
+  optionnel,
+}: {
+  children: React.ReactNode;
+  optionnel?: boolean;
+}) {
+  const t = useTranslations("commun");
+  return (
+    <Etiquette className="flex items-center gap-1.5">
+      <span>{children}</span>
+      {optionnel && (
+        <span className="text-xs font-normal text-muted-foreground">
+          ({t("optionnel")})
+        </span>
+      )}
+    </Etiquette>
+  );
+}
+
 export const Champ = ({
   label,
   erreur,
+  optionnel,
   ref,
   className,
   ...props
 }: React.ComponentProps<typeof Saisie> & {
   label: string;
   erreur?: string;
+  optionnel?: boolean;
 }) => (
   <div className={cn("space-y-2", className)}>
-    <Etiquette>{label}</Etiquette>
-    <Saisie ref={ref} {...props} />
+    <Libelle optionnel={optionnel}>{label}</Libelle>
+    <Saisie ref={ref} aria-invalid={Boolean(erreur)} {...props} />
     {erreur && <p className="text-xs text-destructive">{erreur}</p>}
   </div>
 );
@@ -26,16 +50,20 @@ export const Champ = ({
 export const ChampSelecteur = ({
   label,
   erreur,
+  optionnel,
   className,
   children,
   ...props
 }: React.ComponentProps<typeof Selecteur> & {
   label?: string;
   erreur?: string;
+  optionnel?: boolean;
 }) => (
   <div className={cn("space-y-2", className)}>
-    {label && <Etiquette>{label}</Etiquette>}
-    <Selecteur {...props}>{children}</Selecteur>
+    {label && <Libelle optionnel={optionnel}>{label}</Libelle>}
+    <Selecteur aria-invalid={Boolean(erreur)} {...props}>
+      {children}
+    </Selecteur>
     {erreur && <p className="text-xs text-destructive">{erreur}</p>}
   </div>
 );
@@ -43,15 +71,17 @@ export const ChampSelecteur = ({
 export const ChampZoneTexte = ({
   label,
   erreur,
+  optionnel,
   className,
   ...props
 }: React.ComponentProps<typeof ZoneTexte> & {
   label: string;
   erreur?: string;
+  optionnel?: boolean;
 }) => (
   <div className={cn("space-y-2", className)}>
-    <Etiquette>{label}</Etiquette>
-    <ZoneTexte {...props} />
+    <Libelle optionnel={optionnel}>{label}</Libelle>
+    <ZoneTexte aria-invalid={Boolean(erreur)} {...props} />
     {erreur && <p className="text-xs text-destructive">{erreur}</p>}
   </div>
 );

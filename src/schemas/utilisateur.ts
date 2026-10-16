@@ -1,29 +1,53 @@
 import { z } from "zod";
 
-const emailRequis = z
-  .string()
-  .min(1, "Champ requis.")
-  .email("Adresse e-mail invalide.");
+const emailOptionnel = z
+  .union([z.string().email("Adresse e-mail invalide."), z.literal("")])
+  .optional();
 
-const telephoneRequis = z.string().min(1, "Champ requis.");
-
-export const schemaCreationUtilisateur = z.object({
-  nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
-  nomUtilisateur: z
+const reellementOptionnel = (max: number) =>
+  z
     .string()
-    .min(3, "L'identifiant doit contenir au moins 3 caractères."),
-  email: emailRequis,
-  telephone: telephoneRequis,
+    .max(max)
+    .optional()
+    .transform((v) => {
+      const t = v?.trim();
+      return t ? t : undefined;
+    });
+
+/**
+ * Tous les champs sont optionnels. Lorsqu'une information essentielle
+ * (nom complet, identifiant ou mot de passe) est absente, le serveur la
+ * génère automatiquement et renvoie les identifiants créés à l'appelant.
+ */
+export const schemaCreationUtilisateur = z.object({
+  nomComplet: reellementOptionnel(200),
+  nomUtilisateur: reellementOptionnel(100),
+  email: emailOptionnel,
+  telephone: z
+    .string()
+    .max(30)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
   motDePasse: z
     .string()
-    .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+    .or(z.literal(""))
+    .optional(),
 });
 
 export const schemaModificationUtilisateur = z.object({
   id: z.coerce.number().int().positive(),
-  nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
-  email: emailRequis,
-  telephone: telephoneRequis,
+  nomComplet: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  email: emailOptionnel,
+  telephone: z
+    .string()
+    .max(30)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
 });
 
 export const schemaAttributionRoles = z.object({

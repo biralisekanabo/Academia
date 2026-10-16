@@ -190,7 +190,7 @@ function FormulaireInscription({
   const t = useTranslations();
   const [etudiantId, setEtudiantId] = useState<string | null>(null);
   const [anneeId, setAnneeId] = useState(String(anneeActiveId ?? annees[0]?.id ?? ""));
-  const [faculteId, setFaculteId] = useState(String(facultes[0]?.id ?? ""));
+  const [faculteId, setFaculteId] = useState("");
   const [domaineId, setDomaineId] = useState("");
   const [promotionId, setPromotionId] = useState("");
   const [type, setType] = useState("INITIALE");
@@ -216,7 +216,7 @@ function FormulaireInscription({
     [promotions, domaineId]
   );
 
-  const pret = etudiantId && anneeId && faculteId && domaineId && promotionId;
+  const pret = Boolean(etudiantId);
 
   return (
     <form
@@ -224,10 +224,10 @@ function FormulaireInscription({
         e.preventDefault();
         onSoumettre({
           etudiant_id: Number(etudiantId),
-          annee_academique_id: Number(anneeId),
-          faculte_id: Number(faculteId),
-          domaine_id: Number(domaineId),
-          promotion_id: Number(promotionId),
+          annee_academique_id: anneeId ? Number(anneeId) : undefined,
+          faculte_id: faculteId ? Number(faculteId) : undefined,
+          domaine_id: domaineId ? Number(domaineId) : undefined,
+          promotion_id: promotionId ? Number(promotionId) : undefined,
           type_inscription: type,
           observations,
         });
@@ -244,7 +244,8 @@ function FormulaireInscription({
         />
       </div>
 
-      <ChampSelecteur label={t("inscriptions.annee")} className="w-full" value={anneeId} onChange={(e) => setAnneeId(e.target.value)} required>
+      <ChampSelecteur label={t("inscriptions.annee")} className="w-full" value={anneeId} onChange={(e) => setAnneeId(e.target.value)} optionnel>
+        <option value="">—</option>
         {annees.map((a) => (
           <option key={a.id} value={a.id}>{a.libelle}</option>
         ))}
@@ -259,8 +260,9 @@ function FormulaireInscription({
           setDomaineId("");
           setPromotionId("");
         }}
-        required
+        optionnel
       >
+        <option value="">—</option>
         {facultes.map((f) => (
           <option key={f.id} value={f.id}>{f.nom}</option>
         ))}
@@ -274,7 +276,7 @@ function FormulaireInscription({
           setDomaineId(e.target.value);
           setPromotionId("");
         }}
-        required
+        optionnel
       >
         <option value="">—</option>
         {domainesFiltres.map((d) => (
@@ -282,7 +284,7 @@ function FormulaireInscription({
         ))}
       </ChampSelecteur>
 
-      <ChampSelecteur label={t("academique.promotion")} className="w-full" value={promotionId} onChange={(e) => setPromotionId(e.target.value)} required>
+      <ChampSelecteur label={t("academique.promotion")} className="w-full" value={promotionId} onChange={(e) => setPromotionId(e.target.value)} optionnel>
         <option value="">—</option>
         {promotionsFiltrees.map((p) => (
           <option key={p.id} value={p.id}>{p.nom}</option>
@@ -294,9 +296,9 @@ function FormulaireInscription({
         <option value="REINSCRIPTION">{t("inscriptions.types.REINSCRIPTION")}</option>
       </ChampSelecteur>
 
-      <ChampZoneTexte label={t("inscriptions.observations")} value={observations} onChange={(e) => setObservations(e.target.value)} />
+      <ChampZoneTexte label={t("inscriptions.observations")} value={observations} onChange={(e) => setObservations(e.target.value)} optionnel />
 
-      <div className="flex justify-end gap-2 border-t pt-4">
+      <div className="flex flex-col-reverse gap-2 border-t pt-4 sm:flex-row sm:justify-end">
         <Bouton type="button" variante="contour" onClick={onFermer}>
           {t("commun.annuler")}
         </Bouton>

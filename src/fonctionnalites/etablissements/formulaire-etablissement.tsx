@@ -8,6 +8,7 @@ import { useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { creerEtablissement } from "@/actions/etablissements";
+import { Modale } from "@/composants/partages/modale";
 import { Bouton } from "@/composants/ui/bouton";
 import { Etiquette } from "@/composants/ui/etiquette";
 import { Saisie } from "@/composants/ui/saisie";
@@ -33,20 +34,17 @@ export function FormulaireEtablissement() {
     () =>
       z.object({
         nom: z.string().min(2, { message: t("commun.requis") }),
-        sigle: z.string().min(2, { message: t("commun.requis") }),
+        sigle: z.string().optional(),
         typeEntreprise: z.enum(TYPES),
         ville: z.string().optional(),
         province: z.string().optional(),
         pays: z.string().optional(),
         telephone: z.string().optional(),
         email: z.string().optional(),
-        adminNomComplet: z.string().min(3, { message: t("commun.requis") }),
-        adminNomUtilisateur: z.string().min(3, { message: t("commun.requis") }),
-        adminEmail: z
-          .string()
-          .min(1, { message: t("commun.requis") })
-          .email({ message: t("commun.emailInvalide") }),
-        adminMotDePasse: z.string().min(8, { message: t("auth.motDePasseCourt") }),
+        adminNomComplet: z.string().optional(),
+        adminNomUtilisateur: z.string().optional(),
+        adminEmail: z.string().optional(),
+        adminMotDePasse: z.string().optional(),
         succursales: z.array(
           z.object({ nom: z.string(), ville: z.string().optional() })
         ),
@@ -83,6 +81,10 @@ export function FormulaireEtablissement() {
 
   const { fields, append, remove } = useFieldArray({ control, name: "succursales" });
   const [erreur, setErreur] = useState<string | null>(null);
+  const [identifiants, setIdentifiants] = useState<{
+    identifiant: string;
+    motDePasse?: string;
+  } | null>(null);
 
   const soumettre = handleSubmit((valeurs) => {
     demarrer(async () => {
@@ -115,10 +117,66 @@ export function FormulaireEtablissement() {
       }
 
       toasts.succes(t("toasts.succes"), t("etablissements.creationReussie"));
+      if (resultat.identifiant) {
+        setIdentifiants({
+          identifiant: resultat.identifiant,
+          motDePasse: resultat.motDePasse,
+        });
+        return;
+      }
       routeur.push("/etablissements");
       routeur.refresh();
     });
   });
+
+  if (identifiants) {
+    return (
+      <Modale
+        ouvert
+        titre={t("utilisateurs.identifiantsTitre")}
+        sousTitre={t("etablissements.adminCree")}
+        onFermer={() => {
+          routeur.push("/etablissements");
+          routeur.refresh();
+        }}
+      >
+        <div className="space-y-4">
+          <div className="space-y-3 rounded-xl border bg-muted/40 p-4">
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                {t("auth.identifiant")}
+              </p>
+              <p className="font-mono text-sm break-all">{identifiants.identifiant}</p>
+            </div>
+            {identifiants.motDePasse && (
+              <div className="space-y-1">
+                <p className="text-xs font-medium text-muted-foreground">
+                  {t("auth.motDePasse")}
+                </p>
+                <p className="font-mono text-sm break-all">
+                  {identifiants.motDePasse}
+                </p>
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {t("utilisateurs.identifiantsNote")}
+          </p>
+          <div className="flex justify-end gap-2 border-t pt-4">
+            <Bouton
+              type="button"
+              onClick={() => {
+                routeur.push("/etablissements");
+                routeur.refresh();
+              }}
+            >
+              {t("commun.terminer")}
+            </Bouton>
+          </div>
+        </div>
+      </Modale>
+    );
+  }
 
   return (
     <form onSubmit={soumettre} className="space-y-8" noValidate>
@@ -180,27 +238,26 @@ export function FormulaireEtablissement() {
         titre={t("etablissements.sectionAdmin")}
         description={t("etablissements.adminAide")}
       >
+        <p className="rounded-lg border border-dashed bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+          {t("etablissements.adminOptionnel")}
+        </p>
         <Champ
           label={t("etablissements.adminNomComplet")}
-          erreur={errors.adminNomComplet?.message}
           {...register("adminNomComplet")}
         />
         <Champ
           label={t("etablissements.email")}
           type="email"
-          erreur={errors.adminEmail?.message}
           {...register("adminEmail")}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <Champ
             label={t("auth.identifiant")}
-            erreur={errors.adminNomUtilisateur?.message}
             {...register("adminNomUtilisateur")}
           />
           <Champ
             label={t("auth.motDePasse")}
             type="password"
-            erreur={errors.adminMotDePasse?.message}
             {...register("adminMotDePasse")}
           />
         </div>
@@ -228,7 +285,7 @@ export function FormulaireEtablissement() {
           </p>
         )}
         {fields.map((champ, index) => (
-          <div key={champ.id} className="flex items-end gap-3">
+          <div key={champ.id} className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex-1">
               <Champ
                 label={t("etablissements.nomSuccursale")}
@@ -245,7 +302,7 @@ export function FormulaireEtablissement() {
               type="button"
               variante="fantome"
               taille="icone"
-              className="text-muted-foreground hover:text-destructive"
+              className="self-end text-muted-foreground hover:text-destructive"
               onClick={() => remove(index)}
               aria-label={t("commun.supprimer")}
             >

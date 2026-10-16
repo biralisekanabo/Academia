@@ -7,11 +7,15 @@ import bcrypt from "bcryptjs";
 import { exigerSuperAdmin } from "@/bibliotheque/autorisation";
 import { bd } from "@/bibliotheque/bd";
 import {
+  baseIdentifiant,
+  genererMotDePasse,
+  identifiantUnique,
+} from "@/bibliotheque/identifiants";
+import {
   schemaAdminPrincipal,
   schemaEtablissement,
   schemaModificationEtablissement,
   schemaSuccursale,
-  type DonneesAdminPrincipal,
   type DonneesEtablissement,
   type DonneesSuccursale,
 } from "@/schemas/etablissement";
@@ -21,6 +25,17 @@ export type ResultatEtablissement = {
   erreur?: string;
   ok?: boolean;
   id?: number;
+  /** Identifiant de connexion de l'administrateur principal. */
+  identifiant?: string;
+  /** Mot de passe généré automatiquement (si non fourni). */
+  motDePasse?: string;
+};
+
+export type DonneesAdminOptionnel = {
+  nomComplet?: string;
+  nomUtilisateur?: string;
+  email?: string;
+  motDePasse?: string;
 };
 
 function nettoyer(valeur?: string): string | null {
@@ -30,7 +45,7 @@ function nettoyer(valeur?: string): string | null {
 
 export async function creerEtablissement(donnees: {
   etablissement: DonneesEtablissement;
-  admin: DonneesAdminPrincipal;
+  admin: DonneesAdminOptionnel;
   succursales: DonneesSuccursale[];
 }): Promise<ResultatEtablissement> {
   const t = await getTranslations();
@@ -88,13 +103,26 @@ export async function creerEtablissement(donnees: {
     });
   }
 
-  const hash = await bcrypt.hash(admin.data.motDePasse, 12);
+  const motDePasseAdmin =
+    admin.data.motDePasse?.trim() || genererMotDePasse();
+  const nomUtilisateurAdmin = admin.data.nomUtilisateur
+    ? await identifiantUnique(baseIdentifiant([admin.data.nomUtilisateur]))
+    : await identifiantUnique(
+        baseIdentifiant([admin.data.email, admin.data.nomComplet, etab.data.nom])
+      );
+  const nomCompletAdmin =
+    admin.data.nomComplet?.trim() ||
+    nomUtilisateurAdmin ||
+    nettoyer(admin.data.email) ||
+    `Admin ${etab.data.nom}`;
+
+  const hash = await bcrypt.hash(motDePasseAdmin, 12);
   const { data: utilisateur, error: erreurAdmin } = await client
     .from("utilisateurs")
     .insert({
       entreprise_id: mere.id,
-      nom_complet: admin.data.nomComplet.trim(),
-      nom_utilisateur: admin.data.nomUtilisateur.trim(),
+      nom_complet: nomCompletAdmin,
+      nom_utilisateur: nomUtilisateurAdmin,
       email: nettoyer(admin.data.email),
       password_hash: hash,
       est_admin_principal: true,
@@ -136,7 +164,12 @@ export async function creerEtablissement(donnees: {
 
   revalidatePath("/[locale]/etablissements", "page");
   revalidatePath("/[locale]/accueil", "page");
-  return { ok: true, id: mere.id };
+  return {
+    ok: true,
+    id: mere.id,
+    identifiant: nomUtilisateurAdmin,
+    motDePasse: admin.data.motDePasse?.trim() ? undefined : motDePasseAdmin,
+  };
 }
 
 export async function modifierEtablissement(

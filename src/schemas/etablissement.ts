@@ -2,7 +2,11 @@ import { z } from "zod";
 
 export const schemaEtablissement = z.object({
   nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
-  sigle: z.string().min(2, "Le sigle doit contenir au moins 2 caractères."),
+  sigle: z
+    .string()
+    .max(40)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
   typeEntreprise: z
     .enum(["UNIVERSITE", "INSTITUT", "ECOLE_SUPERIEURE", "CENTRE_FORMATION", "AUTRE"])
     .default("UNIVERSITE"),
@@ -15,10 +19,22 @@ export const schemaEtablissement = z.object({
 });
 
 export const schemaAdminPrincipal = z.object({
-  nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
-  nomUtilisateur: z.string().min(3, "L'identifiant doit contenir au moins 3 caractères."),
-  email: z.string().min(1, "Champ requis.").email("Adresse e-mail invalide."),
-  motDePasse: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
+  nomComplet: z
+    .string()
+    .max(200)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  nomUtilisateur: z
+    .string()
+    .max(100)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  email: z.union([z.string().email("Adresse e-mail invalide."), z.literal("")]).optional(),
+  motDePasse: z
+    .string()
+    .min(8, "Le mot de passe doit contenir au moins 8 caractères.")
+    .or(z.literal(""))
+    .optional(),
 });
 
 export const schemaSuccursale = z.object({
