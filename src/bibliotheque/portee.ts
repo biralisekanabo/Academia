@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { bd } from "@/bibliotheque/bd";
 import type { Session } from "@/types/base";
 
@@ -21,7 +23,9 @@ export type EntrepriseLite = {
 };
 
 /** Retourne l'ID de l'entreprise mère (l'entreprise elle-même si c'en est une). */
-export async function entrepriseMereId(entrepriseId: number): Promise<number> {
+export const entrepriseMereId = cache(async function entrepriseMereId(
+  entrepriseId: number
+): Promise<number> {
   const { data } = await bd()
     .from("entreprises")
     .select("id, est_mere, entreprise_mere_id")
@@ -31,10 +35,10 @@ export async function entrepriseMereId(entrepriseId: number): Promise<number> {
 
   if (!data) return entrepriseId;
   return data.est_mere ? data.id : (data.entreprise_mere_id ?? data.id);
-}
+});
 
 /** Liste des entreprises du périmètre : la mère et ses succursales. */
-export async function perimetreEntreprise(
+export const perimetreEntreprise = cache(async function perimetreEntreprise(
   entrepriseId: number
 ): Promise<number[]> {
   const mereId = await entrepriseMereId(entrepriseId);
@@ -46,7 +50,7 @@ export async function perimetreEntreprise(
 
   const ids = (data ?? []).map((l) => (l as { id: number }).id);
   return ids.length > 0 ? ids : [entrepriseId];
-}
+});
 
 /** Succursales déclarées (hors mère) du périmètre. */
 export async function succursalesDe(entrepriseId: number): Promise<EntrepriseLite[]> {

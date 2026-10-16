@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { getLocale } from "next-intl/server";
 
 import { bd } from "@/bibliotheque/bd";
@@ -8,7 +9,7 @@ import { redirect } from "@/i18n/navigation";
 import type { Session } from "@/types/base";
 
 /** Session obligatoire, sinon redirection vers la connexion. */
-export async function exigerSession(): Promise<Session> {
+export const exigerSession = cache(async function exigerSession(): Promise<Session> {
   const session = await lireSession();
   if (!session) {
     const locale = await getLocale();
@@ -16,7 +17,7 @@ export async function exigerSession(): Promise<Session> {
     throw new Error("Redirection vers la connexion");
   }
   return session;
-}
+});
 
 /** Réservé au super administrateur de la plateforme. */
 export async function exigerSuperAdmin(): Promise<Session> {
@@ -34,7 +35,7 @@ export function estSuperAdmin(session: Session): boolean {
 }
 
 /** Charge la liste des codes de permission effectifs de l'utilisateur. */
-export async function chargerPermissions(
+export const chargerPermissions = cache(async function chargerPermissions(
   utilisateurId: number
 ): Promise<Set<string>> {
   const { data } = await bd()
@@ -56,7 +57,7 @@ export async function chargerPermissions(
     }
   }
   return codes;
-}
+});
 
 /** Exige une permission précise (module.action). */
 export async function exigerPermission(

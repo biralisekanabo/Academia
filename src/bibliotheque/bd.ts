@@ -1,13 +1,17 @@
 import "server-only";
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+let client: SupabaseClient | null = null;
 
 /**
  * Client base de données avec la clé service_role (PostgREST).
  * À utiliser EXCLUSIVEMENT côté serveur : contourne la RLS.
  * Toutes les tables applicatives vivent dans le schéma `public`.
  */
-export function bd() {
+export function bd(): SupabaseClient {
+  if (client) return client;
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const cle = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -17,13 +21,15 @@ export function bd() {
     );
   }
 
-  return createClient(url, cle, {
+  client = createClient(url, cle, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
     db: { schema: "public" },
   });
+
+  return client;
 }
 
 /** Nom de table typé libre (les types métier viendront au fil des modules). */

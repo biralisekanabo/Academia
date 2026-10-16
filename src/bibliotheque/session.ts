@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 
@@ -33,7 +34,7 @@ export async function ecrireSession(session: Session): Promise<void> {
   });
 }
 
-export async function lireSession(): Promise<Session | null> {
+export const lireSession = cache(async function lireSession(): Promise<Session | null> {
   const magasin = await cookies();
   const jeton = magasin.get(NOM_COOKIE)?.value;
   if (!jeton) return null;
@@ -52,7 +53,7 @@ export async function lireSession(): Promise<Session | null> {
   } catch {
     return null;
   }
-}
+});
 
 export async function effacerSession(): Promise<void> {
   const magasin = await cookies();

@@ -63,7 +63,7 @@ export function SidebarPortail({
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {elements.map(({ titreCle, lien, icone: Icone }, index) => {
+          {elements.map(({ titreCle, lien, icone: Icone }) => {
             const actif =
               chemin === lien || (lien !== "/" && chemin.startsWith(lien));
 
@@ -73,9 +73,8 @@ export function SidebarPortail({
                 href={lien}
                 prefetch
                 onClick={() => setOuvert(false)}
-                style={{ ["--delai" as string]: `${index * 45}ms` }}
                 className={cn(
-                  "group animate-entree relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
+                  "group relative flex items-center gap-3 overflow-hidden rounded-xl px-3 py-2 text-sm font-medium transition-all duration-300",
                   actif
                     ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm"
                     : "text-sidebar-foreground/70 hover:translate-x-0.5 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
