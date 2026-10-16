@@ -2,7 +2,7 @@
 
 import { useMemo, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, LockKeyhole, LoaderCircle } from "lucide-react";
+import { Building2, LockKeyhole, LoaderCircle, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -16,7 +16,7 @@ import { useToast } from "@/composants/ui/toaster";
 import { cheminApresConnexion } from "@/constantes/navigation-portail";
 import { useRouter } from "@/i18n/navigation";
 
-type Donnees = { service: string; motDePasse: string };
+type Donnees = { etablissement: string; identifiant: string; motDePasse: string };
 
 export function FormulaireConnexion() {
   const t = useTranslations("auth");
@@ -27,7 +27,8 @@ export function FormulaireConnexion() {
   const schema = useMemo(
     () =>
       z.object({
-        service: z.string().min(1, { message: t("requis") }),
+        etablissement: z.string().min(1, { message: t("requis") }),
+        identifiant: z.string().min(1, { message: t("requis") }),
         motDePasse: z.string().min(6, { message: t("motDePasseCourt") }),
       }),
     [t]
@@ -42,7 +43,7 @@ export function FormulaireConnexion() {
     formState: { errors },
   } = useForm<Donnees>({
     resolver: zodResolver(schema),
-    defaultValues: { service: "", motDePasse: "" },
+    defaultValues: { etablissement: "", identifiant: "", motDePasse: "" },
   });
 
   const soumettre = handleSubmit(async (valeurs) => {
@@ -53,7 +54,7 @@ export function FormulaireConnexion() {
         toasts.erreur(tGlobal("toasts.erreur"), resultat.erreur);
         return;
       }
-      routeur.push(cheminApresConnexion(resultat.role));
+      routeur.push(cheminApresConnexion);
       routeur.refresh();
     });
   });
@@ -70,23 +71,43 @@ export function FormulaireConnexion() {
       )}
 
       <div className="space-y-2">
-        <Etiquette htmlFor="service">{t("service")}</Etiquette>
+        <Etiquette htmlFor="etablissement">{t("etablissement")}</Etiquette>
         <ChampAuth icone={Building2}>
           <Saisie
-            id="service"
-            autoComplete="username"
-            placeholder={t("servicePlaceholder")}
-            aria-invalid={!!errors.service}
+            id="etablissement"
+            autoComplete="organization"
+            placeholder={t("etablissementPlaceholder")}
+            aria-invalid={!!errors.etablissement}
             className="h-11 rounded-xl pl-11"
-            {...register("service")}
+            {...register("etablissement")}
           />
         </ChampAuth>
-        {errors.service && (
-          <p className="text-sm text-destructive">{errors.service.message}</p>
+        {errors.etablissement && (
+          <p className="text-sm text-destructive">
+            {errors.etablissement.message}
+          </p>
         )}
-        {!errors.service && (
+        {!errors.etablissement && (
           <p className="text-xs leading-relaxed text-muted-foreground">
-            {t("serviceAideConnexion")}
+            {t("etablissementAide")}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Etiquette htmlFor="identifiant">{t("identifiant")}</Etiquette>
+        <ChampAuth icone={User}>
+          <Saisie
+            id="identifiant"
+            autoComplete="username"
+            aria-invalid={!!errors.identifiant}
+            className="h-11 rounded-xl pl-11"
+            {...register("identifiant")}
+          />
+        </ChampAuth>
+        {errors.identifiant && (
+          <p className="text-sm text-destructive">
+            {errors.identifiant.message}
           </p>
         )}
       </div>
@@ -106,11 +127,6 @@ export function FormulaireConnexion() {
         {errors.motDePasse && (
           <p className="text-sm text-destructive">
             {errors.motDePasse.message}
-          </p>
-        )}
-        {!errors.motDePasse && (
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            {t("motDePasseAideConnexion")}
           </p>
         )}
       </div>

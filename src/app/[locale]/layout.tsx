@@ -13,24 +13,24 @@ import messagesEn from "../../../messages/en.json";
 import messagesFr from "../../../messages/fr.json";
 
 const DESCRIPTION =
-  "Plateforme de gestion universitaire OpenLu : étudiants, cours, notes, finances et e-learning.";
+  "Plateforme de gestion universitaire Academia : académique, finances, caisse, comptabilité et rapports.";
 
 export const metadata: Metadata = {
-  title: { default: "OpenLu", template: "%s · OpenLu" },
+  title: { default: "Academia", template: "%s · Academia" },
   description: DESCRIPTION,
-  applicationName: "OpenLu",
+  applicationName: "Academia",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "OpenLu",
+    title: "Academia",
     statusBarStyle: "black-translucent",
   },
   formatDetection: { telephone: false },
   openGraph: {
     type: "website",
-    title: "OpenLu",
+    title: "Academia",
     description: DESCRIPTION,
-    siteName: "OpenLu",
+    siteName: "Academia",
   },
   icons: {
     icon: "/icones/icon-192.png",
@@ -74,7 +74,7 @@ export default async function LayoutRacine({
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var p=localStorage.getItem('openlu-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
+              "try{var p=localStorage.getItem('academia-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
           }}
         />
         <FournisseurIntl

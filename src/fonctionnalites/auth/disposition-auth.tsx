@@ -24,7 +24,7 @@ export async function DispositionAuth({
   titre: string;
   sousTitre: string;
   enfants: ReactNode;
-  type: "connexion" | "inscription";
+  type: "connexion" | "inscription" | "initialisation";
 }) {
   const t = await getTranslations("auth");
 
@@ -41,22 +41,29 @@ export async function DispositionAuth({
             <span className="relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-[1.75rem] border border-white/35 bg-white p-2.5 shadow-2xl shadow-indigo-950/25 ring-1 ring-white/20 transition-all duration-500 ease-out group-hover:scale-110 group-hover:-rotate-3 group-hover:shadow-[0_24px_70px_-20px_rgba(255,255,255,0.65)] sm:size-28">
               <span className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/70 via-transparent to-brand-3/20 opacity-70" />
               <Image
-                src="/openlu-logo.png"
-                alt="Logo OPENLU"
+                src="/academia-logo.svg"
+                alt="Logo ACADEMIA"
                 fill
                 sizes="112px"
                 priority
+                unoptimized
                 className="relative z-10 scale-[0.88] object-contain transition-transform duration-500 ease-out group-hover:scale-100"
               />
             </span>
             <span className="text-2xl font-extrabold tracking-[0.18em] text-white drop-shadow-sm transition-all duration-300 group-hover:tracking-[0.24em] sm:text-3xl">
-              OPENLU
+              ACADEMIA
             </span>
           </div>
 
           <span className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm">
             <Sparkles className="size-3.5" />
-            {t(type === "connexion" ? "accrocheConnexion" : "accrocheInscription")}
+            {t(
+              type === "connexion"
+                ? "accrocheConnexion"
+                : type === "inscription"
+                  ? "accrocheInscription"
+                  : "accrocheInitialisation"
+            )}
           </span>
           <p className="max-w-md text-4xl leading-tight font-bold tracking-tight text-balance xl:text-5xl">
             {t("promesseTitre")}
@@ -78,7 +85,7 @@ export async function DispositionAuth({
 
         <div className="relative flex items-center gap-2 text-xs text-white/70">
           <span className="inline-block size-2 rounded-full bg-white/80" />
-          Open Learning University
+          Academia
           <ArrowRight className="ml-auto size-4 opacity-70" />
         </div>
       </div>
@@ -101,7 +108,13 @@ export async function DispositionAuth({
                 style={{ ["--delai" as string]: "100ms" }}
               >
                 <ShieldCheck className="size-3.5" />
-                {t(type === "connexion" ? "badgeConnexion" : "badgeInscription")}
+                {t(
+                  type === "connexion"
+                    ? "badgeConnexion"
+                    : type === "inscription"
+                      ? "badgeInscription"
+                      : "badgeInitialisation"
+                )}
               </span>
               <CarteTitre
                 className="animate-entree text-2xl font-bold tracking-tight"

@@ -9,8 +9,8 @@ import { cn } from "@/utilitaires/cn";
 
 export type PreferenceTheme = "system" | "light" | "dark";
 
-const CLE = "openlu-theme";
-const EVENEMENT = "openlu-theme";
+const CLE = "academia-theme";
+const EVENEMENT = "academia-theme";
 
 function estPreference(valeur: string | null): valeur is PreferenceTheme {
   return valeur === "system" || valeur === "light" || valeur === "dark";

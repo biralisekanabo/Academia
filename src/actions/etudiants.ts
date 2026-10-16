@@ -1,200 +1,225 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getTranslations } from "next-intl/server";
 
-import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
-import { creerNotifications } from "@/bibliotheque/notifications";
-import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
-import { debloquerCompteBloque } from "@/bibliotheque/supabase/comptes";
-import {
-  schemaEtudiant,
-  schemaModificationEtudiant,
-} from "@/schemas/etudiant";
-import type {
-  DonneesEtudiant,
-  DonneesModificationEtudiant,
-} from "@/schemas/etudiant";
+import { exigerPermission, exigerSession } from "@/bibliotheque/autorisation";
+import { bd } from "@/bibliotheque/bd";
+import { genererNumero } from "@/bibliotheque/numerotation";
+import { perimetreEntreprise } from "@/bibliotheque/portee";
+import { schemaEtudiant, schemaStatutEtudiant } from "@/schemas/etudiant";
+import type { Etudiant, Session } from "@/types/base";
 
-export type ResultatInscription = {
-  erreur?: string;
-  matricule?: string;
-  ok?: boolean;
-};
+export type Resultat = { erreur?: string; ok?: boolean; id?: number };
 
-export async function inscrireEtudiant(
-  donnees: DonneesEtudiant
-): Promise<ResultatInscription> {
-  const t = await getTranslations();
-  await obtenirProfilSousControle(["administrateur", "reception", "personnel"]);
+function nettoyer(valeur?: string): string | null {
+  const v = valeur?.trim();
+  return v ? v : null;
+}
 
-  const resultat = schemaEtudiant.safeParse(donnees);
-  if (!resultat.success) {
-    return { erreur: t("commun.erreurFormulaire") };
-  }
+async function etudiantDansPerimetre(
+  session: Session,
+  id: number
+): Promise<Etudiant | null> {
+  const perimetre = await perimetreEntreprise(session.entrepriseId);
+  const { data } = await bd()
+    .from("etudiants")
+    .select("*")
+    .eq("id", id)
+    .in("entreprise_id", perimetre)
+    .is("deleted_at", null)
+    .maybeSingle<Etudiant>();
+  return data ?? null;
+}
 
-  const { prenom, nom, email, filiereId, niveau, anneeUniversitaire } =
-    resultat.data;
-
-  const admin = creerClientAdmin();
-
-  // Création du compte Auth via la clé service_role : aucun e-mail de
-  // confirmation n'est envoyé et la session courante n'est pas remplacée.
-  const metadata = { prenom, nom, role: "etudiant" };
-  const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
-    email,
-    password: "openlu-initial",
-    email_confirm: true,
-    user_metadata: metadata,
+async function journaliser(
+  session: Session,
+  action: string,
+  cibleId: number,
+  details?: Record<string, unknown>
+): Promise<void> {
+  await bd().from("journal_audit").insert({
+    entreprise_id: session.entrepriseId,
+    utilisateur_id: session.utilisateurId,
+    action,
+    table_concernee: "etudiants",
+    enregistrement_id: cibleId,
+    details: details ?? null,
   });
+}
 
-  let idUtilisateur = cree?.user?.id ?? null;
+export async function creerEtudiant(
+  donnees: Record<string, unknown>
+): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "ETUDIANTS.CREER");
 
-  if (erreurAuth || !idUtilisateur) {
-    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
-
-    // Un compte resté non confirmé par l'ancien flux est débloqué au lieu
-    // de renvoyer « déjà utilisé » : personne ne peut s'en servir.
-    if (deja) {
-      idUtilisateur = await debloquerCompteBloque(admin, email, {
-        motDePasse: "openlu-initial",
-        metadata,
-      });
-    }
-
-    if (!idUtilisateur) {
-      return { erreur: deja ? t("etudiants.emailDejaUtilise") : t("etudiants.erreurCompte") };
-    }
+  const parse = schemaEtudiant.safeParse(donnees);
+  if (!parse.success) {
+    return { erreur: parse.error.issues[0]?.message ?? "Formulaire invalide." };
   }
+  const d = parse.data;
 
-  const { count } = await admin
-    .from("openlu_etudiants")
-    .select("*", { count: "exact", head: true })
-    .eq("annee_universitaire", anneeUniversitaire);
+  const matricule =
+    d.matricule ??
+    (await genererNumero(session.entrepriseId, "MATRICULE", "ETU-"));
 
-  const annee = anneeUniversitaire.split("-")[0];
-  let matricule = "";
-  let erreurInsert: string | null = null;
-
-  for (let tentative = 0; tentative < 5; tentative++) {
-    const numero = (count ?? 0) + 1 + tentative;
-    matricule = `OL-${annee}-${String(numero).padStart(4, "0")}`;
-
-    const { error } = await admin.from("openlu_etudiants").insert({
-      id: idUtilisateur,
+  const { data, error } = await bd()
+    .from("etudiants")
+    .insert({
+      entreprise_id: session.entrepriseId,
       matricule,
-      filiere_id: filiereId,
-      niveau,
-      annee_universitaire: anneeUniversitaire,
-      statut: "actif",
-    });
+      nom: d.nom.trim(),
+      postnom: nettoyer(d.postnom),
+      prenom: d.prenom.trim(),
+      sexe: d.sexe,
+      date_naissance: nettoyer(d.date_naissance),
+      lieu_naissance: nettoyer(d.lieu_naissance),
+      nationalite: nettoyer(d.nationalite) ?? "Congolaise",
+      adresse: nettoyer(d.adresse),
+      telephone: nettoyer(d.telephone),
+      email: nettoyer(d.email),
+      nom_pere: nettoyer(d.nom_pere),
+      nom_mere: nettoyer(d.nom_mere),
+      nom_tuteur: nettoyer(d.nom_tuteur),
+      telephone_tuteur: nettoyer(d.telephone_tuteur),
+      contact_urgence: nettoyer(d.contact_urgence),
+      type_piece: d.type_piece || null,
+      numero_piece: nettoyer(d.numero_piece),
+      statut: d.statut ?? "ACTIF",
+      observations: nettoyer(d.observations),
+    })
+    .select("id")
+    .single<{ id: number }>();
 
-    if (!error) break;
-    erreurInsert = error.message;
-    matricule = "";
+  if (error || !data) {
+    const deja = /duplicate|unique/i.test(error?.message ?? "");
+    return {
+      erreur: deja ? "Ce matricule est déjà utilisé." : "Impossible de créer l'étudiant.",
+    };
   }
 
-  if (!matricule) {
-    // Évite d'orpheliner un compte Auth si l'insertion du dossier échoue.
-    await admin.auth.admin.deleteUser(idUtilisateur).catch(() => undefined);
-    return { erreur: erreurInsert ?? t("etudiants.erreurMatricule") };
-  }
-
-  await creerNotifications([idUtilisateur], {
-    titre: t("notifications.evenements.inscriptionTitre"),
-    message: t("notifications.evenements.inscriptionMessage", {
-      nom: `${prenom} ${nom}`.trim(),
-    }),
-    type: "succes",
-    lien: "/accueil",
-  });
-
+  await journaliser(session, "CREATION_ETUDIANT", data.id);
   revalidatePath("/[locale]/etudiants", "page");
-  revalidatePath("/[locale]/tableau-de-bord", "page");
-  return { ok: true, matricule };
+  return { ok: true, id: data.id };
 }
 
 export async function modifierEtudiant(
-  donnees: DonneesModificationEtudiant
-): Promise<{ erreur?: string; ok?: boolean }> {
-  const t = await getTranslations();
-  await obtenirProfilSousControle(["administrateur", "reception", "personnel"]);
+  donnees: Record<string, unknown> & { id: number }
+): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "ETUDIANTS.MODIFIER");
 
-  const resultat = schemaModificationEtudiant.safeParse(donnees);
-  if (!resultat.success) {
-    return { erreur: t("commun.erreurFormulaire") };
+  const parse = schemaEtudiant.safeParse(donnees);
+  if (!parse.success) {
+    return { erreur: parse.error.issues[0]?.message ?? "Formulaire invalide." };
+  }
+  if (!(await etudiantDansPerimetre(session, donnees.id))) {
+    return { erreur: "Étudiant introuvable." };
+  }
+  const d = parse.data;
+
+  const { error } = await bd()
+    .from("etudiants")
+    .update({
+      matricule: d.matricule?.trim() || undefined,
+      nom: d.nom.trim(),
+      postnom: nettoyer(d.postnom),
+      prenom: d.prenom.trim(),
+      sexe: d.sexe,
+      date_naissance: nettoyer(d.date_naissance),
+      lieu_naissance: nettoyer(d.lieu_naissance),
+      nationalite: nettoyer(d.nationalite),
+      adresse: nettoyer(d.adresse),
+      telephone: nettoyer(d.telephone),
+      email: nettoyer(d.email),
+      nom_pere: nettoyer(d.nom_pere),
+      nom_mere: nettoyer(d.nom_mere),
+      nom_tuteur: nettoyer(d.nom_tuteur),
+      telephone_tuteur: nettoyer(d.telephone_tuteur),
+      contact_urgence: nettoyer(d.contact_urgence),
+      type_piece: d.type_piece || null,
+      numero_piece: nettoyer(d.numero_piece),
+      observations: nettoyer(d.observations),
+    })
+    .eq("id", donnees.id);
+
+  if (error) {
+    const deja = /duplicate|unique/i.test(error.message ?? "");
+    return { erreur: deja ? "Ce matricule est déjà utilisé." : "Impossible de modifier l'étudiant." };
   }
 
-  const { id, prenom, nom, faculteId, filiereId, niveau, statut } =
-    resultat.data;
-  const admin = creerClientAdmin();
-  const { data: filiere, error: erreurFiliere } = await admin
-    .from("openlu_filieres")
-    .select("faculte_id")
-    .eq("id", filiereId)
-    .maybeSingle();
-
-  if (erreurFiliere || !filiere || filiere.faculte_id !== faculteId) {
-    return { erreur: t("etudiants.erreurFiliereFaculte") };
-  }
-
-  const { data: etudiant, error: erreurLecture } = await admin
-    .from("openlu_etudiants")
-    .select("id")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (erreurLecture || !etudiant) {
-    return { erreur: t("etudiants.erreurMiseAJour") };
-  }
-
-  const { error: erreurProfil } = await admin
-    .from("openlu_profils")
-    .update({ prenom, nom })
-    .eq("id", id)
-    .eq("role", "etudiant");
-
-  if (erreurProfil) {
-    return { erreur: t("etudiants.erreurMiseAJour") };
-  }
-
-  const { error: erreurDossier } = await admin
-    .from("openlu_etudiants")
-    .update({ filiere_id: filiereId, niveau, statut })
-    .eq("id", id);
-
-  if (erreurDossier) {
-    return { erreur: t("etudiants.erreurMiseAJourPartielle") };
-  }
-
+  await journaliser(session, "MODIFICATION_ETUDIANT", donnees.id);
   revalidatePath("/[locale]/etudiants", "page");
   return { ok: true };
 }
 
 export async function definirStatutEtudiant(
-  id: string,
-  statut: "actif" | "inactif"
-): Promise<{ erreur?: string; ok?: boolean }> {
-  const t = await getTranslations();
-  await obtenirProfilSousControle(["administrateur", "reception", "personnel"]);
+  id: number,
+  statut: Etudiant["statut"]
+): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "ETUDIANTS.MODIFIER");
 
-  if (
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)
-    || (statut !== "actif" && statut !== "inactif")
-  ) {
-    return { erreur: t("etudiants.erreurStatut") };
+  const parse = schemaStatutEtudiant.safeParse({ id, statut });
+  if (!parse.success) return { erreur: "Statut invalide." };
+  if (!(await etudiantDansPerimetre(session, id))) {
+    return { erreur: "Étudiant introuvable." };
   }
 
-  const admin = creerClientAdmin();
-  const { error } = await admin
-    .from("openlu_etudiants")
-    .update({ statut })
+  const { error } = await bd()
+    .from("etudiants")
+    .update({ statut: parse.data.statut })
     .eq("id", id);
+  if (error) return { erreur: "Impossible de modifier le statut." };
 
-  if (error) {
-    return { erreur: t("etudiants.erreurStatut") };
-  }
-
+  await journaliser(session, "STATUT_ETUDIANT", id, { statut });
   revalidatePath("/[locale]/etudiants", "page");
   return { ok: true };
+}
+
+export async function supprimerEtudiant(id: number): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "ETUDIANTS.SUPPRIMER");
+
+  if (!(await etudiantDansPerimetre(session, id))) {
+    return { erreur: "Étudiant introuvable." };
+  }
+
+  const { error } = await bd()
+    .from("etudiants")
+    .update({ deleted_at: new Date().toISOString(), statut: "INACTIF" })
+    .eq("id", id);
+  if (error) return { erreur: "Impossible de supprimer (des inscriptions y sont liées)." };
+
+  await journaliser(session, "SUPPRESSION_ETUDIANT", id);
+  revalidatePath("/[locale]/etudiants", "page");
+  return { ok: true };
+}
+
+export async function televerserPhotoEtudiant(
+  id: number,
+  donnees: { type: string; base64: string }
+): Promise<Resultat & { chemin?: string }> {
+  const session = await exigerSession();
+  await exigerPermission(session, "ETUDIANTS.MODIFIER");
+
+  if (!(await etudiantDansPerimetre(session, id))) {
+    return { erreur: "Étudiant introuvable." };
+  }
+  if (!donnees.base64) return { erreur: "Fichier manquant." };
+
+  const ext = (donnees.type.split("/")[1] ?? "jpg").replace("jpeg", "jpg");
+  const chemin = `${session.entrepriseId}/${id}-${Date.now()}.${ext}`;
+  const contenu = Buffer.from(donnees.base64, "base64");
+
+  const { error } = await bd()
+    .storage.from("photos-etudiants")
+    .upload(chemin, contenu, { contentType: donnees.type, upsert: true });
+
+  if (error) return { erreur: "Impossible de téléverser la photo." };
+
+  await bd().from("etudiants").update({ photo: chemin }).eq("id", id);
+  await journaliser(session, "PHOTO_ETUDIANT", id);
+  revalidatePath("/[locale]/etudiants", "page");
+  return { ok: true, chemin };
 }

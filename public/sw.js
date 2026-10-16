@@ -1,6 +1,6 @@
-/* Service Worker OPENLU — notifications Web Push (app fermée) + installation PWA. */
+/* Service Worker ACADEMIA — notifications Web Push (app fermée) + installation PWA. */
 
-const CACHE = "openlu-v2";
+const CACHE = "academia-v1";
 
 self.addEventListener("install", (evenement) => {
   evenement.waitUntil(
@@ -26,9 +26,9 @@ self.addEventListener("activate", (evenement) => {
 /* --- Réception d'une notification poussée depuis le serveur --- */
 self.addEventListener("push", (evenement) => {
   let donnees = {
-    titre: "OpenLu",
+    titre: "Academia",
     message: "Nouvelle notification",
-    lien: "/tableau-de-bord",
+    lien: "/accueil",
     type: "info",
   };
 
@@ -43,22 +43,22 @@ self.addEventListener("push", (evenement) => {
     icon: "/icones/icon-192.png",
     badge: "/icones/badge-96.png",
     image: donnees.image || undefined,
-    tag: donnees.lien || "openlu",
+    tag: donnees.lien || "academia",
     renotify: true,
-    data: { url: donnees.lien || "/tableau-de-bord" },
+    data: { url: donnees.lien || "/accueil" },
     vibrate: [80, 40, 80],
     actions: [{ action: "ouvrir", title: "Ouvrir" }],
   };
 
   evenement.waitUntil(
-    self.registration.showNotification(donnees.titre || "OpenLu", options)
+    self.registration.showNotification(donnees.titre || "Academia", options)
   );
 });
 
 /* --- Clic sur la notification : focus ou ouverture de l'app --- */
 self.addEventListener("notificationclick", (evenement) => {
   evenement.notification.close();
-  const cible = evenement.notification.data?.url || "/tableau-de-bord";
+  const cible = evenement.notification.data?.url || "/accueil";
 
   evenement.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {

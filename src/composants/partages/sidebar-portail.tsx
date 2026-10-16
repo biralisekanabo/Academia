@@ -7,16 +7,21 @@ import { useTranslations } from "next-intl";
 import { Logo } from "@/composants/partages/logo";
 import { SelecteurLangue } from "@/composants/partages/selecteur-langue";
 import { Link, usePathname } from "@/i18n/navigation";
-import { navigationParRole } from "@/constantes/navigation-portail";
-import type { TypeRole } from "@/types/database";
+import { navigationPour } from "@/constantes/navigation-portail";
 import { cn } from "@/utilitaires/cn";
 
-export function SidebarPortail({ role }: { role: TypeRole }) {
+export function SidebarPortail({
+  roles,
+  permissions = [],
+}: {
+  roles: string[];
+  permissions?: string[];
+}) {
   const t = useTranslations();
   const chemin = usePathname();
   const [ouvert, setOuvert] = useState(false);
 
-  const elements = navigationParRole[role] ?? [];
+  const elements = navigationPour(roles, permissions);
 
   return (
     <>
@@ -104,7 +109,7 @@ export function SidebarPortail({ role }: { role: TypeRole }) {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            <p className="text-xs font-medium text-muted-foreground">OPENLU · v0.1</p>
+            <p className="text-xs font-medium text-muted-foreground">ACADEMIA · v0.1</p>
           </div>
           <div className="mt-3 flex justify-center border-t pt-3 md:hidden">
             <SelecteurLangue />

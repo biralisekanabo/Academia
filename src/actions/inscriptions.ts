@@ -1,121 +1,145 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getTranslations } from "next-intl/server";
-import { z } from "zod";
 
-import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
-import { creerNotifications } from "@/bibliotheque/notifications";
-import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
-import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
+import { exigerPermission, exigerSession } from "@/bibliotheque/autorisation";
+import { bd } from "@/bibliotheque/bd";
+import { genererNumero } from "@/bibliotheque/numerotation";
+import { perimetreEntreprise } from "@/bibliotheque/portee";
+import { schemaInscription } from "@/schemas/inscription";
+import type { Inscription, Session } from "@/types/base";
 
-export type ResultatInscription = {
-  erreur?: string;
-  ok?: boolean;
-};
+export type Resultat = { erreur?: string; ok?: boolean; id?: number };
 
-const schemaCible = z.object({
-  coursId: z.string().uuid(),
-  etudiantId: z.string().uuid(),
-});
+function nettoyer(valeur?: string): string | null {
+  const v = valeur?.trim();
+  return v ? v : null;
+}
 
-/**
- * Inscrit un étudiant à un cours. Réservé au propriétaire du cours
- * (enseignant) ou à l'administration. L'écriture passe par le client
- * service_role car la RLS n'expose pas d'insertion pour l'enseignant.
- */
-export async function inscrireEtudiantAuCours(donnees: {
-  coursId: string;
-  etudiantId: string;
-}): Promise<ResultatInscription> {
-  const t = await getTranslations();
-  const profil = await obtenirProfilSousControle(["enseignant", "administrateur"]);
+async function inscriptionDansPerimetre(
+  session: Session,
+  id: number
+): Promise<Inscription | null> {
+  const perimetre = await perimetreEntreprise(session.entrepriseId);
+  const { data } = await bd()
+    .from("inscriptions")
+    .select("*")
+    .eq("id", id)
+    .in("entreprise_id", perimetre)
+    .is("deleted_at", null)
+    .maybeSingle<Inscription>();
+  return data ?? null;
+}
 
-  const resultat = schemaCible.safeParse(donnees);
-  if (!resultat.success) {
-    return { erreur: t("commun.erreurFormulaire") };
-  }
-
-  const { coursId, etudiantId } = resultat.data;
-  const supabase = await creerClientServeur();
-
-  const { data: cours, error: erreurCours } = await supabase
-    .from("openlu_cours")
-    .select("id, titre, enseignant_id")
-    .eq("id", coursId)
-    .single();
-
-  if (erreurCours || !cours) {
-    return { erreur: t("notes.erreurInscription") };
-  }
-
-  if (profil.role === "enseignant" && cours.enseignant_id !== profil.id) {
-    return { erreur: t("notes.erreurInscription") };
-  }
-
-  const admin = creerClientAdmin();
-  const { error } = await admin
-    .from("openlu_inscriptions_cours")
-    .upsert(
-      { cours_id: coursId, etudiant_id: etudiantId, statut: "validee" },
-      { onConflict: "etudiant_id,cours_id" }
-    );
-
-  if (error) {
-    return { erreur: t("notes.erreurInscription") };
-  }
-
-  await creerNotifications([etudiantId], {
-    titre: t("notifications.evenements.coursTitre"),
-    message: t("notifications.evenements.coursMessage", { cours: cours.titre }),
-    type: "info",
-    lien: "/notes",
+async function journaliser(
+  session: Session,
+  action: string,
+  cibleId: number,
+  details?: Record<string, unknown>
+): Promise<void> {
+  await bd().from("journal_audit").insert({
+    entreprise_id: session.entrepriseId,
+    utilisateur_id: session.utilisateurId,
+    action,
+    table_concernee: "inscriptions",
+    enregistrement_id: cibleId,
+    details: details ?? null,
   });
+}
 
-  revalidatePath("/notes");
+export async function creerInscription(
+  donnees: Record<string, unknown>
+): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "INSCRIPTIONS.CREER");
+
+  const parse = schemaInscription.safeParse(donnees);
+  if (!parse.success) {
+    return { erreur: parse.error.issues[0]?.message ?? "Formulaire invalide." };
+  }
+  const d = parse.data;
+
+  const numero =
+    d.numero_inscription ??
+    (await genererNumero(
+      session.entrepriseId,
+      "INSCRIPTION",
+      "INS-",
+      new Date().getFullYear()
+    ));
+
+  const { data, error } = await bd()
+    .from("inscriptions")
+    .insert({
+      entreprise_id: session.entrepriseId,
+      etudiant_id: d.etudiant_id,
+      annee_academique_id: d.annee_academique_id,
+      faculte_id: d.faculte_id,
+      domaine_id: d.domaine_id,
+      promotion_id: d.promotion_id,
+      numero_inscription: numero,
+      date_inscription: d.date_inscription || new Date().toISOString().slice(0, 10),
+      type_inscription: d.type_inscription ?? "INITIALE",
+      statut: "EN_ATTENTE",
+      enregistre_par: session.utilisateurId,
+      observations: nettoyer(d.observations),
+    })
+    .select("id")
+    .single<{ id: number }>();
+
+  if (error || !data) {
+    const deja = /duplicate|unique/i.test(error?.message ?? "");
+    return {
+      erreur: deja
+        ? "Cet étudiant est déjà inscrit dans ce périmètre pour cette année."
+        : `Impossible de créer l'inscription.`,
+    };
+  }
+
+  await journaliser(session, "CREATION_INSCRIPTION", data.id);
+  revalidatePath("/[locale]/inscriptions", "page");
+  return { ok: true, id: data.id };
+}
+
+export async function changerStatutInscription(
+  id: number,
+  statut: "EN_ATTENTE" | "VALIDEE" | "REFUSEE" | "ANNULEE"
+): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "INSCRIPTIONS.VALIDER");
+
+  const inscription = await inscriptionDansPerimetre(session, id);
+  if (!inscription) return { erreur: "Inscription introuvable." };
+
+  const maj: Record<string, unknown> = { statut };
+  if (statut === "VALIDEE") {
+    maj.validee_par = session.utilisateurId;
+    maj.validee_le = new Date().toISOString();
+  }
+
+  const { error } = await bd().from("inscriptions").update(maj).eq("id", id);
+  if (error) return { erreur: "Impossible de modifier le statut." };
+
+  await journaliser(session, "STATUT_INSCRIPTION", id, { statut });
+  revalidatePath("/[locale]/inscriptions", "page");
   return { ok: true };
 }
 
-export async function retirerEtudiantDuCours(donnees: {
-  coursId: string;
-  etudiantId: string;
-}): Promise<ResultatInscription> {
-  const t = await getTranslations();
-  const profil = await obtenirProfilSousControle(["enseignant", "administrateur"]);
+export async function supprimerInscription(id: number): Promise<Resultat> {
+  const session = await exigerSession();
+  await exigerPermission(session, "INSCRIPTIONS.SUPPRIMER");
 
-  const resultat = schemaCible.safeParse(donnees);
-  if (!resultat.success) {
-    return { erreur: t("commun.erreurFormulaire") };
+  if (!(await inscriptionDansPerimetre(session, id))) {
+    return { erreur: "Inscription introuvable." };
   }
 
-  const { coursId, etudiantId } = resultat.data;
-  const supabase = await creerClientServeur();
+  const { error } = await bd()
+    .from("inscriptions")
+    .update({ deleted_at: new Date().toISOString(), statut: "ANNULEE" })
+    .eq("id", id);
+  if (error) return { erreur: "Impossible de supprimer l'inscription." };
 
-  const { data: cours, error: erreurCours } = await supabase
-    .from("openlu_cours")
-    .select("id, enseignant_id")
-    .eq("id", coursId)
-    .single();
-
-  if (erreurCours || !cours) {
-    return { erreur: t("notes.erreurRetrait") };
-  }
-
-  if (profil.role === "enseignant" && cours.enseignant_id !== profil.id) {
-    return { erreur: t("notes.erreurRetrait") };
-  }
-
-  const admin = creerClientAdmin();
-  const { error } = await admin
-    .from("openlu_inscriptions_cours")
-    .delete()
-    .eq("cours_id", coursId)
-    .eq("etudiant_id", etudiantId);
-
-  if (error) {
-    return { erreur: t("notes.erreurRetrait") };
-  }
-
-  revalidatePath("/notes");
+  await journaliser(session, "SUPPRESSION_INSCRIPTION", id);
+  revalidatePath("/[locale]/inscriptions", "page");
   return { ok: true };
 }

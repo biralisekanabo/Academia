@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { obtenirProfilSousControle } from "@/bibliotheque/autorisation";
+import { chargerPermissions, exigerSession } from "@/bibliotheque/autorisation";
 import { EntetePortail } from "@/composants/partages/entete-portail";
 import { SidebarPortail } from "@/composants/partages/sidebar-portail";
 import { TransitionRoute } from "@/composants/partages/transition-route";
@@ -35,19 +35,16 @@ export default function LayoutPortail({
 }
 
 async function BarreLateraleConnectee() {
-  const profil = await obtenirProfilSousControle();
-  return <SidebarPortail role={profil.role} />;
+  const session = await exigerSession();
+  const permissions = await chargerPermissions(session.utilisateurId);
+  return (
+    <SidebarPortail roles={session.roles} permissions={[...permissions]} />
+  );
 }
 
 async function EnteteConnectee() {
-  const profil = await obtenirProfilSousControle();
-
+  const session = await exigerSession();
   return (
-    <EntetePortail
-      utilisateurId={profil.id}
-      prenom={profil.prenom}
-      nom={profil.nom}
-      role={profil.role}
-    />
+    <EntetePortail nomComplet={session.nomComplet} roles={session.roles} />
   );
 }

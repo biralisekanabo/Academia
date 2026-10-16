@@ -1,16 +1,13 @@
 ﻿import { getLocale } from "next-intl/server";
 import { connection } from "next/server";
 
-import { obtenirSession } from "@/bibliotheque/supabase/session";
+import { lireSession } from "@/bibliotheque/session";
 import { redirect } from "@/i18n/navigation";
 
 export default async function PageAccueil() {
   await connection();
   const locale = await getLocale();
-  const session = await obtenirSession();
-  redirect({
-    href: session.utilisateur && session.profil ? "/accueil" : "/connexion",
-    locale,
-  });
+  const session = await lireSession();
+  redirect({ href: session ? "/accueil" : "/connexion", locale });
   return null;
 }

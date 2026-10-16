@@ -1,32 +1,49 @@
 import { z } from "zod";
 
+const STATUTS_ETUDIANT = [
+  "ACTIF",
+  "INACTIF",
+  "SUSPENDU",
+  "DIPLOME",
+  "REJETE",
+  "EN_ATTENTE",
+] as const;
+
+const TYPES_PIECE = ["CNI", "PASSEPORT", "PAROISSE", "AUTRE"] as const;
+
 export const schemaEtudiant = z.object({
-  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères."),
-  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
-  email: z.string().email("Adresse e-mail invalide."),
-  filiereId: z.string().min(1, "Sélectionnez une filière."),
-  niveau: z.enum(["L1", "L2", "L3", "M1", "M2"]),
-  anneeUniversitaire: z.string().default("2026-2027"),
+  id: z.coerce.number().int().positive().optional(),
+  matricule: z
+    .string()
+    .max(40)
+    .optional()
+    .transform((v) => (v?.trim() ? v.trim() : undefined)),
+  nom: z.string().min(1, "Le nom est requis.").max(80),
+  postnom: z.string().max(80).optional(),
+  prenom: z.string().min(1, "Le prénom est requis.").max(80),
+  sexe: z.enum(["M", "F"], { message: "Le sexe est requis." }),
+  date_naissance: z.string().optional(),
+  lieu_naissance: z.string().max(120).optional(),
+  nationalite: z.string().max(80).optional(),
+  adresse: z.string().optional(),
+  telephone: z.string().max(30).optional(),
+  email: z
+    .union([z.string().email("E-mail invalide."), z.literal("")])
+    .optional(),
+  nom_pere: z.string().max(120).optional(),
+  nom_mere: z.string().max(120).optional(),
+  nom_tuteur: z.string().max(120).optional(),
+  telephone_tuteur: z.string().max(30).optional(),
+  contact_urgence: z.string().max(120).optional(),
+  type_piece: z.union([z.enum(TYPES_PIECE), z.literal("")]).optional(),
+  numero_piece: z.string().max(60).optional(),
+  statut: z.enum(STATUTS_ETUDIANT).optional().default("ACTIF"),
+  observations: z.string().optional(),
 });
 
-export const schemaModificationEtudiant = z.object({
-  id: z.string().uuid(),
-  prenom: z.string().min(2, "Le prénom doit contenir au moins 2 caractères."),
-  nom: z.string().min(2, "Le nom doit contenir au moins 2 caractères."),
-  faculteId: z.string().uuid(),
-  filiereId: z.string().uuid(),
-  niveau: z.enum(["L1", "L2", "L3", "M1", "M2"]),
-  statut: z.enum([
-    "actif",
-    "inactif",
-    "suspendu",
-    "diplome",
-    "rejete",
-    "en_attente",
-  ]),
+export const schemaStatutEtudiant = z.object({
+  id: z.coerce.number().int().positive(),
+  statut: z.enum(STATUTS_ETUDIANT),
 });
 
 export type DonneesEtudiant = z.infer<typeof schemaEtudiant>;
-export type DonneesModificationEtudiant = z.infer<
-  typeof schemaModificationEtudiant
->;

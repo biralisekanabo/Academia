@@ -1,7 +1,7 @@
 {
-  "name": "OpenLu — Open Learning University",
-  "short_name": "OpenLu",
-  "description": "Plateforme de gestion universitaire : étudiants, cours, notes, finances et e-learning.",
+  "name": "Academia — Gestion universitaire",
+  "short_name": "Academia",
+  "description": "Plateforme multi-établissements de gestion universitaire : académique, finances, caisse et comptabilité.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -33,8 +33,7 @@
     }
   ],
   "shortcuts": [
-    { "name": "Tableau de bord", "url": "/tableau-de-bord" },
-    { "name": "Notes", "url": "/notes" },
-    { "name": "Finances", "url": "/finances" }
+    { "name": "Accueil", "url": "/accueil" },
+    { "name": "Établissements", "url": "/etablissements" }
   ]
 }

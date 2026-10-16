@@ -19,18 +19,19 @@ export function Logo({
         style={{ width: taille, height: taille }}
       >
         <Image
-          src="/openlu-logo.png"
-          alt="OpenLu"
+          src="/academia-logo.svg"
+          alt="Academia"
           fill
           sizes="96px"
           priority
+          unoptimized
           className="object-contain"
         />
         <span className="animate-brillant pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 transition-opacity duration-300 group-hover/logo:opacity-100" />
       </span>
       {avecTexte && (
         <span className="text-lg font-bold tracking-tight">
-          OPEN<span className="texte-degrade">LU</span>
+          ACADE<span className="texte-degrade">MIA</span>
         </span>
       )}
     </span>

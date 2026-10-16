@@ -1,118 +1,104 @@
 "use server";
 
 import { getLocale, getTranslations } from "next-intl/server";
+import bcrypt from "bcryptjs";
 
-import { creerClientAdmin } from "@/bibliotheque/supabase/client-admin";
-import { debloquerCompteBloque } from "@/bibliotheque/supabase/comptes";
-import { creerClientServeur } from "@/bibliotheque/supabase/client-serveur";
+import { bd } from "@/bibliotheque/bd";
+import { effacerSession, ecrireSession } from "@/bibliotheque/session";
 import { redirect } from "@/i18n/navigation";
-import type { TypeRole } from "@/types/database";
-import {
-  emailDepuisService,
-  roleDepuisService,
-  serviceValide,
-} from "@/utilitaires/service";
+import type { Entreprise, Utilisateur } from "@/types/base";
 
-export type ResultatConnexion = {
-  erreur: string | null;
-  role?: TypeRole | null;
-};
+export type ResultatConnexion = { erreur: string | null };
 
 export async function seConnecter(donnees: {
-  service: string;
+  etablissement: string;
+  identifiant: string;
   motDePasse: string;
 }): Promise<ResultatConnexion> {
   const locale = await getLocale();
   const t = await getTranslations({ locale, namespace: "auth" });
 
-  const supabase = await creerClientServeur();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: emailDepuisService(donnees.service),
-    password: donnees.motDePasse,
-  });
+  const client = bd();
 
-  if (error || !data.user) {
+  const { data: entreprise } = await client
+    .from("entreprises")
+    .select("*")
+    .is("deleted_at", null)
+    .or(
+      `sigle.ilike.${donnees.etablissement.trim()},nom.ilike.${donnees.etablissement.trim()}`
+    )
+    .maybeSingle<Entreprise>();
+
+  if (!entreprise || entreprise.statut !== "ACTIVE") {
     return { erreur: t("erreurIdentifiants") };
   }
 
-  const { data: profil } = await supabase
-    .from("openlu_profils")
-    .select("role")
-    .eq("id", data.user.id)
-    .maybeSingle();
+  const { data: utilisateur } = await client
+    .from("utilisateurs")
+    .select("*")
+    .eq("entreprise_id", entreprise.id)
+    .ilike("nom_utilisateur", donnees.identifiant.trim())
+    .is("deleted_at", null)
+    .maybeSingle<Utilisateur & { password_hash: string }>();
 
-  if (!profil) {
-    await supabase.auth.signOut();
-    return { erreur: t("profilIntrouvable") };
-  }
-
-  return { erreur: null, role: profil.role };
-}
-
-export async function sInscrire(donnees: {
-  service: string;
-  motDePasse: string;
-}): Promise<ResultatConnexion> {
-  const locale = await getLocale();
-  const t = await getTranslations({ locale, namespace: "auth" });
-
-  if (!serviceValide(donnees.service)) {
-    return { erreur: t("serviceInvalide") };
-  }
-
-  const email = emailDepuisService(donnees.service);
-  const role = roleDepuisService(donnees.service);
-
-  // Compte créé via la clé service_role avec email_confirm : les adresses
-  // fictives `...@openlu.edu` ne peuvent pas recevoir de mail de
-  // confirmation, ce qui bloquait la connexion (« service déjà utilisé »
-  // à l'inscription puis service introuvable à la connexion).
-  const admin = creerClientAdmin();
-  const metadata = { nom: donnees.service.trim(), role };
-  const { data: cree, error: erreurAuth } = await admin.auth.admin.createUser({
-    email,
-    password: donnees.motDePasse,
-    email_confirm: true,
-    user_metadata: metadata,
-  });
-
-  let idUtilisateur = cree?.user?.id ?? null;
-
-  if (erreurAuth || !idUtilisateur) {
-    const deja = /already|existe|registered/i.test(erreurAuth?.message ?? "");
-
-    // Un compte resté non confirmé par l'ancien flux est débloqué au lieu
-    // de renvoyer « déjà utilisé » : personne ne peut s'en servir.
-    if (deja) {
-      idUtilisateur = await debloquerCompteBloque(admin, email, {
-        motDePasse: donnees.motDePasse,
-        metadata,
-      });
-    }
-
-    if (!idUtilisateur) {
-      return { erreur: deja ? t("serviceDejaUtilise") : t("erreurInscription") };
-    }
-  }
-
-  // Établit la session (cookie) du nouveau compte pour être connecté
-  // immédiatement après l'inscription.
-  const supabase = await creerClientServeur();
-  const { error: erreurConnexion } = await supabase.auth.signInWithPassword({
-    email,
-    password: donnees.motDePasse,
-  });
-
-  if (erreurConnexion) {
+  if (!utilisateur) {
     return { erreur: t("erreurIdentifiants") };
   }
 
-  return { erreur: null, role };
+  const valide = await bcrypt.compare(
+    donnees.motDePasse,
+    utilisateur.password_hash
+  );
+  if (!valide) {
+    return { erreur: t("erreurIdentifiants") };
+  }
+
+  if (utilisateur.statut !== "ACTIF") {
+    return { erreur: t("compteInactif") };
+  }
+
+  const roles = await chargerCodesRoles(utilisateur.id);
+
+  await ecrireSession({
+    utilisateurId: utilisateur.id,
+    entrepriseId: entreprise.id,
+    nomComplet: utilisateur.nom_complet,
+    nomUtilisateur: utilisateur.nom_utilisateur,
+    roles,
+    estAdminPrincipal: utilisateur.est_admin_principal,
+    doitChangerMotDePasse: utilisateur.doit_changer_mot_de_passe,
+  });
+
+  await client
+    .from("utilisateurs")
+    .update({ derniere_connexion: new Date().toISOString() })
+    .eq("id", utilisateur.id);
+
+  await client.from("journal_audit").insert({
+    entreprise_id: entreprise.id,
+    utilisateur_id: utilisateur.id,
+    action: "CONNEXION",
+    table_concernee: "utilisateurs",
+    enregistrement_id: utilisateur.id,
+  });
+
+  return { erreur: null };
 }
 
 export async function seDeconnecter(): Promise<void> {
+  await effacerSession();
   const locale = await getLocale();
-  const supabase = await creerClientServeur();
-  await supabase.auth.signOut();
-  redirect({ href: "/", locale });
+  redirect({ href: "/connexion", locale });
+}
+
+export async function chargerCodesRoles(utilisateurId: number): Promise<string[]> {
+  const { data } = await bd()
+    .from("utilisateur_roles")
+    .select("roles!inner(code)")
+    .eq("utilisateur_id", utilisateurId);
+
+  type Ligne = { roles: { code: string } | null };
+  return ((data ?? []) as unknown as Ligne[])
+    .map((ligne) => ligne.roles?.code)
+    .filter((code): code is string => Boolean(code));
 }
