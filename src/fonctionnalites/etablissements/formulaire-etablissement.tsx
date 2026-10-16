@@ -42,6 +42,10 @@ export function FormulaireEtablissement() {
         email: z.string().optional(),
         adminNomComplet: z.string().min(3, { message: t("commun.requis") }),
         adminNomUtilisateur: z.string().min(3, { message: t("commun.requis") }),
+        adminEmail: z
+          .string()
+          .min(1, { message: t("commun.requis") })
+          .email({ message: t("commun.emailInvalide") }),
         adminMotDePasse: z.string().min(8, { message: t("auth.motDePasseCourt") }),
         succursales: z.array(
           z.object({ nom: z.string(), ville: z.string().optional() })
@@ -71,6 +75,7 @@ export function FormulaireEtablissement() {
       email: "",
       adminNomComplet: "",
       adminNomUtilisateur: "",
+      adminEmail: "",
       adminMotDePasse: "",
       succursales: [],
     },
@@ -96,6 +101,7 @@ export function FormulaireEtablissement() {
         admin: {
           nomComplet: valeurs.adminNomComplet,
           nomUtilisateur: valeurs.adminNomUtilisateur,
+          email: valeurs.adminEmail,
           motDePasse: valeurs.adminMotDePasse,
         },
         succursales: valeurs.succursales ?? [],
@@ -178,6 +184,12 @@ export function FormulaireEtablissement() {
           label={t("etablissements.adminNomComplet")}
           erreur={errors.adminNomComplet?.message}
           {...register("adminNomComplet")}
+        />
+        <Champ
+          label={t("etablissements.email")}
+          type="email"
+          erreur={errors.adminEmail?.message}
+          {...register("adminEmail")}
         />
         <div className="grid gap-4 sm:grid-cols-2">
           <Champ

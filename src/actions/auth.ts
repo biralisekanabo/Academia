@@ -11,7 +11,6 @@ import type { Entreprise, Utilisateur } from "@/types/base";
 export type ResultatConnexion = { erreur: string | null };
 
 export async function seConnecter(donnees: {
-  etablissement: string;
   identifiant: string;
   motDePasse: string;
 }): Promise<ResultatConnexion> {
@@ -19,30 +18,38 @@ export async function seConnecter(donnees: {
   const t = await getTranslations({ locale, namespace: "auth" });
 
   const client = bd();
+  const valeur = donnees.identifiant.trim();
 
-  const { data: entreprise } = await client
-    .from("entreprises")
-    .select("*")
-    .is("deleted_at", null)
-    .or(
-      `sigle.ilike.${donnees.etablissement.trim()},nom.ilike.${donnees.etablissement.trim()}`
-    )
-    .maybeSingle<Entreprise>();
-
-  if (!entreprise || entreprise.statut !== "ACTIVE") {
+  if (!valeur || !donnees.motDePasse) {
     return { erreur: t("erreurIdentifiants") };
   }
 
-  const { data: utilisateur } = await client
+  type Candidat = Utilisateur & { password_hash: string };
+
+  // 1. Par nom d'utilisateur (contrainte UNIQUE globalement).
+  const { data: lignesNom } = await client
     .from("utilisateurs")
     .select("*")
-    .eq("entreprise_id", entreprise.id)
-    .ilike("nom_utilisateur", donnees.identifiant.trim())
+    .ilike("nom_utilisateur", valeur)
     .is("deleted_at", null)
-    .maybeSingle<Utilisateur & { password_hash: string }>();
+    .limit(2);
 
+  let utilisateur: Candidat | null = ((lignesNom ?? []) as Candidat[])[0] ?? null;
+
+  // 2. Sinon par email (doit être non ambigu).
   if (!utilisateur) {
-    return { erreur: t("erreurIdentifiants") };
+    const { data: lignesEmail } = await client
+      .from("utilisateurs")
+      .select("*")
+      .ilike("email", valeur)
+      .is("deleted_at", null)
+      .limit(2);
+
+    const candidats = (lignesEmail ?? []) as Candidat[];
+    if (candidats.length !== 1) {
+      return { erreur: t("erreurIdentifiants") };
+    }
+    utilisateur = candidats[0];
   }
 
   const valide = await bcrypt.compare(
@@ -55,6 +62,17 @@ export async function seConnecter(donnees: {
 
   if (utilisateur.statut !== "ACTIF") {
     return { erreur: t("compteInactif") };
+  }
+
+  const { data: entreprise } = await client
+    .from("entreprises")
+    .select("*")
+    .eq("id", utilisateur.entreprise_id)
+    .is("deleted_at", null)
+    .maybeSingle<Entreprise>();
+
+  if (!entreprise || entreprise.statut !== "ACTIVE") {
+    return { erreur: t("erreurIdentifiants") };
   }
 
   const roles = await chargerCodesRoles(utilisateur.id);

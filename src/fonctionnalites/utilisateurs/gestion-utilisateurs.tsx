@@ -375,8 +375,8 @@ function ModaleUtilisateur({
           />
         )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <Champ label={t("etablissements.email")} type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Champ label={t("etablissements.telephone")} value={telephone} onChange={(e) => setTelephone(e.target.value)} />
+          <Champ label={t("etablissements.email")} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <Champ label={t("etablissements.telephone")} value={telephone} onChange={(e) => setTelephone(e.target.value)} required />
         </div>
         {!utilisateur && (
           <Champ

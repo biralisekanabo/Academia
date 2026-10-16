@@ -2,7 +2,7 @@
 
 import { useMemo, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Building2, LockKeyhole, LoaderCircle, User } from "lucide-react";
+import { AtSign, LockKeyhole, LoaderCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -16,7 +16,7 @@ import { useToast } from "@/composants/ui/toaster";
 import { cheminApresConnexion } from "@/constantes/navigation-portail";
 import { useRouter } from "@/i18n/navigation";
 
-type Donnees = { etablissement: string; identifiant: string; motDePasse: string };
+type Donnees = { identifiant: string; motDePasse: string };
 
 export function FormulaireConnexion() {
   const t = useTranslations("auth");
@@ -27,9 +27,8 @@ export function FormulaireConnexion() {
   const schema = useMemo(
     () =>
       z.object({
-        etablissement: z.string().min(1, { message: t("requis") }),
         identifiant: z.string().min(1, { message: t("requis") }),
-        motDePasse: z.string().min(6, { message: t("motDePasseCourt") }),
+        motDePasse: z.string().min(1, { message: t("requis") }),
       }),
     [t]
   );
@@ -43,7 +42,7 @@ export function FormulaireConnexion() {
     formState: { errors },
   } = useForm<Donnees>({
     resolver: zodResolver(schema),
-    defaultValues: { etablissement: "", identifiant: "", motDePasse: "" },
+    defaultValues: { identifiant: "", motDePasse: "" },
   });
 
   const soumettre = handleSubmit(async (valeurs) => {
@@ -71,43 +70,24 @@ export function FormulaireConnexion() {
       )}
 
       <div className="space-y-2">
-        <Etiquette htmlFor="etablissement">{t("etablissement")}</Etiquette>
-        <ChampAuth icone={Building2}>
-          <Saisie
-            id="etablissement"
-            autoComplete="organization"
-            placeholder={t("etablissementPlaceholder")}
-            aria-invalid={!!errors.etablissement}
-            className="h-11 rounded-xl pl-11"
-            {...register("etablissement")}
-          />
-        </ChampAuth>
-        {errors.etablissement && (
-          <p className="text-sm text-destructive">
-            {errors.etablissement.message}
-          </p>
-        )}
-        {!errors.etablissement && (
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            {t("etablissementAide")}
-          </p>
-        )}
-      </div>
-
-      <div className="space-y-2">
         <Etiquette htmlFor="identifiant">{t("identifiant")}</Etiquette>
-        <ChampAuth icone={User}>
+        <ChampAuth icone={AtSign}>
           <Saisie
             id="identifiant"
             autoComplete="username"
+            placeholder={t("identifiantPlaceholder")}
             aria-invalid={!!errors.identifiant}
             className="h-11 rounded-xl pl-11"
             {...register("identifiant")}
           />
         </ChampAuth>
-        {errors.identifiant && (
+        {errors.identifiant ? (
           <p className="text-sm text-destructive">
             {errors.identifiant.message}
+          </p>
+        ) : (
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {t("identifiantAide")}
           </p>
         )}
       </div>

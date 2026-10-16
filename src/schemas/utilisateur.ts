@@ -1,16 +1,19 @@
 import { z } from "zod";
 
-const emailOptionnel = z
-  .union([z.string().email("Adresse e-mail invalide."), z.literal("")])
-  .optional();
+const emailRequis = z
+  .string()
+  .min(1, "Champ requis.")
+  .email("Adresse e-mail invalide.");
+
+const telephoneRequis = z.string().min(1, "Champ requis.");
 
 export const schemaCreationUtilisateur = z.object({
   nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
   nomUtilisateur: z
     .string()
     .min(3, "L'identifiant doit contenir au moins 3 caractères."),
-  email: emailOptionnel,
-  telephone: z.string().optional(),
+  email: emailRequis,
+  telephone: telephoneRequis,
   motDePasse: z
     .string()
     .min(8, "Le mot de passe doit contenir au moins 8 caractères."),
@@ -19,8 +22,8 @@ export const schemaCreationUtilisateur = z.object({
 export const schemaModificationUtilisateur = z.object({
   id: z.coerce.number().int().positive(),
   nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
-  email: emailOptionnel,
-  telephone: z.string().optional(),
+  email: emailRequis,
+  telephone: telephoneRequis,
 });
 
 export const schemaAttributionRoles = z.object({

@@ -17,7 +17,7 @@ export const schemaEtablissement = z.object({
 export const schemaAdminPrincipal = z.object({
   nomComplet: z.string().min(3, "Le nom doit contenir au moins 3 caractères."),
   nomUtilisateur: z.string().min(3, "L'identifiant doit contenir au moins 3 caractères."),
-  email: z.union([z.string().email("Adresse e-mail invalide."), z.literal("")]).optional(),
+  email: z.string().min(1, "Champ requis.").email("Adresse e-mail invalide."),
   motDePasse: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères."),
 });
 

@@ -263,35 +263,35 @@ function FormulaireEtudiant({
       </div>
       <div className="grid gap-4 sm:grid-cols-3">
         <Champ label={t("etudiants.nom")} value={etat.nom} onChange={(e) => maj("nom", e.target.value)} required />
-        <Champ label={t("etudiants.postnom")} value={etat.postnom} onChange={(e) => maj("postnom", e.target.value)} />
+        <Champ label={t("etudiants.postnom")} value={etat.postnom} onChange={(e) => maj("postnom", e.target.value)} required />
         <Champ label={t("etudiants.prenom")} value={etat.prenom} onChange={(e) => maj("prenom", e.target.value)} required />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.dateNaissance")} type="date" value={etat.date_naissance} onChange={(e) => maj("date_naissance", e.target.value)} />
-        <Champ label={t("etudiants.lieuNaissance")} value={etat.lieu_naissance} onChange={(e) => maj("lieu_naissance", e.target.value)} />
+        <Champ label={t("etudiants.dateNaissance")} type="date" value={etat.date_naissance} onChange={(e) => maj("date_naissance", e.target.value)} required />
+        <Champ label={t("etudiants.lieuNaissance")} value={etat.lieu_naissance} onChange={(e) => maj("lieu_naissance", e.target.value)} required />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nationalite")} value={etat.nationalite} onChange={(e) => maj("nationalite", e.target.value)} />
-        <Champ label={t("etudiants.telephone")} value={etat.telephone} onChange={(e) => maj("telephone", e.target.value)} />
+        <Champ label={t("etudiants.nationalite")} value={etat.nationalite} onChange={(e) => maj("nationalite", e.target.value)} required />
+        <Champ label={t("etudiants.telephone")} value={etat.telephone} onChange={(e) => maj("telephone", e.target.value)} required />
       </div>
-      <Champ label={t("etablissements.email")} type="email" value={etat.email} onChange={(e) => maj("email", e.target.value)} />
-      <Champ label={t("etudiants.adresse")} value={etat.adresse} onChange={(e) => maj("adresse", e.target.value)} />
+      <Champ label={t("etablissements.email")} type="email" value={etat.email} onChange={(e) => maj("email", e.target.value)} required />
+      <Champ label={t("etudiants.adresse")} value={etat.adresse} onChange={(e) => maj("adresse", e.target.value)} required />
       <div className="grid gap-4 sm:grid-cols-2">
-        <ChampSelecteur label={t("etudiants.typePiece")} className="w-full" value={etat.type_piece} onChange={(e) => maj("type_piece", e.target.value)}>
+        <ChampSelecteur label={t("etudiants.typePiece")} className="w-full" value={etat.type_piece} onChange={(e) => maj("type_piece", e.target.value)} required>
           <option value="">—</option>
           {TYPES_PIECE.map((p) => (
             <option key={p} value={p}>{p}</option>
           ))}
         </ChampSelecteur>
-        <Champ label={t("etudiants.numeroPiece")} value={etat.numero_piece} onChange={(e) => maj("numero_piece", e.target.value)} />
+        <Champ label={t("etudiants.numeroPiece")} value={etat.numero_piece} onChange={(e) => maj("numero_piece", e.target.value)} required />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nomPere")} value={etat.nom_pere} onChange={(e) => maj("nom_pere", e.target.value)} />
-        <Champ label={t("etudiants.nomMere")} value={etat.nom_mere} onChange={(e) => maj("nom_mere", e.target.value)} />
+        <Champ label={t("etudiants.nomPere")} value={etat.nom_pere} onChange={(e) => maj("nom_pere", e.target.value)} required />
+        <Champ label={t("etudiants.nomMere")} value={etat.nom_mere} onChange={(e) => maj("nom_mere", e.target.value)} required />
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Champ label={t("etudiants.nomTuteur")} value={etat.nom_tuteur} onChange={(e) => maj("nom_tuteur", e.target.value)} />
-        <Champ label={t("etudiants.telephoneTuteur")} value={etat.telephone_tuteur} onChange={(e) => maj("telephone_tuteur", e.target.value)} />
+        <Champ label={t("etudiants.nomTuteur")} value={etat.nom_tuteur} onChange={(e) => maj("nom_tuteur", e.target.value)} required />
+        <Champ label={t("etudiants.telephoneTuteur")} value={etat.telephone_tuteur} onChange={(e) => maj("telephone_tuteur", e.target.value)} required />
       </div>
       <ChampZoneTexte label={t("etudiants.observations")} value={etat.observations} onChange={(e) => maj("observations", e.target.value)} />
 
