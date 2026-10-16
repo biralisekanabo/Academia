@@ -11,6 +11,7 @@ import {
   CarteTitre,
 } from "@/composants/ui/carte";
 import { Link } from "@/i18n/navigation";
+import { Logo } from "@/composants/partages/logo";
 
 async function compterEtablissements(): Promise<number> {
   const { count } = await bd()
@@ -41,6 +42,7 @@ export default async function PageAccueil() {
 
   return (
     <div className="space-y-6">
+      <Logo />
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-bold tracking-tight">
           {t("bonjour", { nom: session.nomComplet })}
@@ -49,7 +51,7 @@ export default async function PageAccueil() {
       </div>
 
       {superAdmin ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-3 gap-4">
           <Statistique
             icone={<Building2 className="size-5" />}
             libelle={t("etablissements")}
