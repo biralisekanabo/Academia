@@ -1,0 +1,9 @@
+{
+  "name": "eduplex-desktop",
+  "version": "1.0.0",
+  "description": "Application de bureau Eduplex",
+  "author": "Eduplex",
+  "main": "main.cjs",
+  "private": true,
+  "dependencies": {}
+}

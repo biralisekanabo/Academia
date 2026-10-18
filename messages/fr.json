@@ -1,6 +1,6 @@
 {
   "meta": {
-    "titre": "Academia · Gestion universitaire",
+    "titre": "Eduplex · Gestion universitaire",
     "description": "Plateforme multi-établissements de gestion universitaire : académique, finances, caisse et comptabilité."
   },
   "theme": {
@@ -98,7 +98,7 @@
     "connexionTitre": "Bon retour",
     "connexionSousTitre": "Connectez-vous à votre espace.",
     "accrocheConnexion": "Heureux de vous revoir",
-    "accrocheInitialisation": "Bienvenue sur Academia",
+    "accrocheInitialisation": "Bienvenue sur Eduplex",
     "promesseTitre": "Votre établissement, plus simple.",
     "promesseTexte": "Gérez l'académique, les finances et la comptabilité au même endroit.",
     "promesseCours": "Académique",
@@ -119,7 +119,7 @@
     "premiereUtilisation": "Première utilisation de la plateforme ?",
     "initialiserPlateforme": "Initialiser la plateforme",
     "initialisationTitre": "Initialiser la plateforme",
-    "initialisationSousTitre": "Créez le tout premier super administrateur d'Academia.",
+    "initialisationSousTitre": "Créez le tout premier super administrateur d'Eduplex.",
     "initDejaFait": "La plateforme est déjà initialisée.",
     "initErreur": "Impossible de créer le compte administrateur.",
     "initReussie": "Super administrateur créé. Connectez-vous.",
@@ -156,7 +156,8 @@
     "afficher": "Afficher",
     "masquer": "Masquer",
     "emailInvalide": "Adresse e-mail invalide.",
-    "erreurFormulaire": "Vérifiez les informations du formulaire."
+    "erreurFormulaire": "Vérifiez les informations du formulaire.",
+    "confirmer": "Confirmer"
   },
   "toasts": {
     "succes": "Opération réussie",
@@ -169,7 +170,7 @@
     "utilisateurs": "Utilisateurs",
     "role": "Votre rôle",
     "superAdmin": "Super administrateur",
-    "bienvenueTitre": "Bienvenue sur Academia",
+    "bienvenueTitre": "Bienvenue sur Eduplex",
     "bienvenueTexte": "Les modules de gestion apparaîtront ici au fur et à mesure de leur activation."
   },
   "etablissements": {
@@ -740,5 +741,25 @@
       "methode": "Méthode",
       "montant": "Montant"
     }
+  },
+  "installation": {
+    "telecharger": "Télécharger l'application",
+    "titre": "Installer Eduplex",
+    "sousTitre": "Installez Eduplex sur votre appareil pour un accès rapide, comme une application.",
+    "iosEtape1": "Ouvrez cette page dans Safari.",
+    "iosEtape2": "Appuyez sur l’icône Partager, puis sur « Sur l’écran d’accueil ».",
+    "iosEtape3": "Confirmez avec « Ajouter ».",
+    "androidEtape1": "Ouvrez cette page dans Chrome.",
+    "androidEtape2": "Appuyez sur le menu ⋮ en haut à droite, puis sur « Installer l’application ».",
+    "androidEtape3": "Confirmez l’installation : l’icône apparaîtra dans votre lanceur.",
+    "desktopEtape1": "Ouvrez cette page dans Chrome ou Edge.",
+    "desktopEtape2": "Cliquez sur l’icône Installer dans la barre d’adresse (ou menu ⋮ → « Installer Eduplex »).",
+    "desktopEtape3": "Confirmez pour créer l’application de bureau."
+  },
+  "miseAJour": {
+    "titre": "Nouvelle version disponible",
+    "message": "Une mise à jour d’Eduplex est prête. Rechargez pour en profiter.",
+    "recharger": "Recharger",
+    "plusTard": "Plus tard"
   }
 }

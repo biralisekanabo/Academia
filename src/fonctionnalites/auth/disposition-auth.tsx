@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen, ShieldCheck, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Logo } from "@/composants/partages/logo";
+import { BoutonTelechargerApp } from "@/composants/partages/bouton-telecharger-app";
 import { SelecteurLangue } from "@/composants/partages/selecteur-langue";
 import { BasculerTheme } from "@/composants/partages/basculer-theme";
 import { TransitionRoute } from "@/composants/partages/transition-route";
@@ -41,8 +42,8 @@ export async function DispositionAuth({
             <span className="relative grid size-24 shrink-0 place-items-center overflow-hidden rounded-[1.75rem] border border-white/35 bg-white p-2.5 shadow-2xl shadow-indigo-950/25 ring-1 ring-white/20 transition-all duration-500 ease-out group-hover:scale-110 group-hover:-rotate-3 group-hover:shadow-[0_24px_70px_-20px_rgba(255,255,255,0.65)] sm:size-28">
               <span className="pointer-events-none absolute inset-0 rounded-[inherit] bg-gradient-to-br from-white/70 via-transparent to-brand-3/20 opacity-70" />
               <Image
-                src="/academia-logo.svg"
-                alt="Logo ACADEMIA"
+                src="/eduplex-logo.svg"
+                alt="Logo EDUPLEX"
                 fill
                 sizes="112px"
                 priority
@@ -51,7 +52,7 @@ export async function DispositionAuth({
               />
             </span>
             <span className="text-2xl font-extrabold tracking-[0.18em] text-white drop-shadow-sm transition-all duration-300 group-hover:tracking-[0.24em] sm:text-3xl">
-              ACADEMIA
+              EDUPLEX
             </span>
           </div>
 
@@ -85,13 +86,14 @@ export async function DispositionAuth({
 
         <div className="relative flex items-center gap-2 text-xs text-white/70">
           <span className="inline-block size-2 rounded-full bg-white/80" />
-          Academia
+          Eduplex
           <ArrowRight className="ml-auto size-4 opacity-70" />
         </div>
       </div>
 
       <div className="relative flex min-h-dvh flex-col items-center justify-center px-5 py-20 sm:px-8 sm:py-16">
         <header className="absolute top-4 right-4 flex items-center gap-2 sm:top-6 sm:right-8">
+          <BoutonTelechargerApp className="hidden sm:flex" />
           <SelecteurLangue />
           <BasculerTheme />
         </header>

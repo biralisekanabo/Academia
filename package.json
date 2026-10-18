@@ -1,5 +1,5 @@
 {
-  "name": "academia",
+  "name": "eduplex",
   "version": "0.1.0",
   "private": true,
   "engines": {
@@ -9,9 +9,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "cap:sync": "cap sync android",
+    "cap:open": "cap open android",
+    "apk": "cap sync android && cd android && gradlew.bat assembleRelease",
+    "electron:dev": "electron electron",
+    "electron:build": "electron-builder --win --config electron-builder.yml"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
     "@hookform/resolvers": "^5.9.1",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.117.3",
@@ -40,6 +48,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@tailwindcss/turbopack": "^4",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20",
@@ -48,6 +57,8 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
+    "electron": "^44.9.0",
+    "electron-builder": "^26.15.3",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",

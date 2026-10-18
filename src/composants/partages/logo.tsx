@@ -19,8 +19,8 @@ export function Logo({
         style={{ width: taille, height: taille }}
       >
         <Image
-          src="/academia-logo.svg"
-          alt="Academia"
+          src="/eduplex-logo.svg"
+          alt="Eduplex"
           fill
           sizes="96px"
           priority
@@ -31,7 +31,7 @@ export function Logo({
       </span>
       {avecTexte && (
         <span className="text-lg font-bold tracking-tight">
-          ACADE<span className="texte-degrade">MIA</span>
+          EDU<span className="texte-degrade">PLEX</span>
         </span>
       )}
     </span>

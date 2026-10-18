@@ -1,6 +1,6 @@
 {
   "meta": {
-    "titre": "Academia · University management",
+    "titre": "Eduplex · University management",
     "description": "Multi-institution university management platform: academics, finance, cash desk and accounting."
   },
   "theme": {
@@ -98,7 +98,7 @@
     "connexionTitre": "Welcome back",
     "connexionSousTitre": "Sign in to your workspace.",
     "accrocheConnexion": "Glad to see you again",
-    "accrocheInitialisation": "Welcome to Academia",
+    "accrocheInitialisation": "Welcome to Eduplex",
     "promesseTitre": "Your institution, made simple.",
     "promesseTexte": "Manage academics, finance and accounting in one place.",
     "promesseCours": "Academics",
@@ -119,7 +119,7 @@
     "premiereUtilisation": "First time on the platform?",
     "initialiserPlateforme": "Initialize the platform",
     "initialisationTitre": "Initialize the platform",
-    "initialisationSousTitre": "Create the very first Academia super administrator.",
+    "initialisationSousTitre": "Create the very first Eduplex super administrator.",
     "initDejaFait": "The platform is already initialized.",
     "initErreur": "Unable to create the administrator account.",
     "initReussie": "Super administrator created. Please sign in.",
@@ -156,7 +156,8 @@
     "afficher": "Show",
     "masquer": "Hide",
     "emailInvalide": "Invalid email address.",
-    "erreurFormulaire": "Check the form details."
+    "erreurFormulaire": "Check the form details.",
+    "confirmer": "Confirm"
   },
   "toasts": {
     "succes": "Success",
@@ -169,7 +170,7 @@
     "utilisateurs": "Users",
     "role": "Your role",
     "superAdmin": "Super administrator",
-    "bienvenueTitre": "Welcome to Academia",
+    "bienvenueTitre": "Welcome to Eduplex",
     "bienvenueTexte": "Management modules will appear here as they are activated."
   },
   "etablissements": {
@@ -740,5 +741,25 @@
       "methode": "Method",
       "montant": "Amount"
     }
+  },
+  "installation": {
+    "telecharger": "Download the app",
+    "titre": "Install Eduplex",
+    "sousTitre": "Install Eduplex on your device for quick access, just like an app.",
+    "iosEtape1": "Open this page in Safari.",
+    "iosEtape2": "Tap the Share icon, then “Add to Home Screen”.",
+    "iosEtape3": "Confirm with “Add”.",
+    "androidEtape1": "Open this page in Chrome.",
+    "androidEtape2": "Tap the ⋮ menu at the top right, then “Install app”.",
+    "androidEtape3": "Confirm: the icon will appear in your launcher.",
+    "desktopEtape1": "Open this page in Chrome or Edge.",
+    "desktopEtape2": "Click the Install icon in the address bar (or menu ⋮ → “Install Eduplex”).",
+    "desktopEtape3": "Confirm to create the desktop app."
+  },
+  "miseAJour": {
+    "titre": "New version available",
+    "message": "An Eduplex update is ready. Reload to get it.",
+    "recharger": "Reload",
+    "plusTard": "Later"
   }
 }

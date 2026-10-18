@@ -6,7 +6,7 @@ import { SignJWT, jwtVerify } from "jose";
 
 import type { Session } from "@/types/base";
 
-const NOM_COOKIE = "academia_session";
+const NOM_COOKIE = "eduplex_session";
 const DUREE_SECONDES = 60 * 60 * 8; // 8 heures
 
 function cle() {

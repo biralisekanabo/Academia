@@ -12,6 +12,13 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Projets et artefacts natifs (Android / Electron / PWA) :
+    "android/**",
+    "electron/**",
+    "electron-dist/**",
+    "native/**",
+    "build-resources/**",
+    "assets/**",
   ]),
 ]);
 

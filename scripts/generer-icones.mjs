@@ -5,11 +5,11 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const racine = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const source = resolve(racine, "public/academia-logo.svg");
+const source = resolve(racine, "public/eduplex-logo.svg");
 const svg = await readFile(source);
 
 const cibles = [
-  { chemin: "public/academia-logo.png", taille: 512, fond: null },
+  { chemin: "public/eduplex-logo.png", taille: 512, fond: null },
   { chemin: "public/icones/icon-192.png", taille: 192, fond: null },
   { chemin: "public/icones/icon-512.png", taille: 512, fond: null },
   { chemin: "public/icones/apple-touch-icon.png", taille: 180, fond: "#6d4aff" },

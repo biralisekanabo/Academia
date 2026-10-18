@@ -1,0 +1,30 @@
+appId: com.eduplex.app
+productName: Eduplex
+electronVersion: 44.9.0
+copyright: Copyright © 2026 Eduplex
+
+directories:
+  app: electron
+  output: electron-dist
+  buildResources: build-resources
+
+files:
+  - "**/*"
+  - "!node_modules/**/*"
+  - "!**/node_modules/**/*"
+
+win:
+  icon: build-resources/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Eduplex
+  artifactName: "Eduplex-Setup-${version}.${ext}"

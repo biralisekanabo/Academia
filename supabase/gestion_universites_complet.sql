@@ -1,5 +1,5 @@
 -- ============================================================
--- ACADEMIA · Nettoyage de l'ancienne base (schéma openlu_*)
+-- EDUPLEX · Nettoyage de l'ancienne base (schéma openlu_*)
 -- Idempotent : supprime tous les objets de l'ancienne application
 -- (tables, vues, fonctions, types, politiques RLS).
 -- À exécuter EN PREMIER, avant les migrations 0001 → 0011.
@@ -2013,7 +2013,7 @@ USING (bucket_id = 'logos');
 -- À exécuter APRÈS les migrations 0001 → 0010.
 -- ============================================================
 -- Identifiants de connexion :
---   Établissement : ACADEMIA
+--   Établissement : EDUPLEX
 --   Identifiant   : Admin@gmail.com
 --   Mot de passe  : 12345678
 -- (à changer après la première connexion)
@@ -2021,7 +2021,7 @@ USING (bucket_id = 'logos');
 
 -- 1. Entreprise plateforme (une seule)
 INSERT INTO entreprises (nom, sigle, type_entreprise, statut, est_mere)
-SELECT 'Plateforme Academia', 'ACADEMIA', 'PLATEFORME', 'ACTIVE', TRUE
+SELECT 'Plateforme Eduplex', 'EDUPLEX', 'PLATEFORME', 'ACTIVE', TRUE
 WHERE NOT EXISTS (
     SELECT 1 FROM entreprises
     WHERE type_entreprise = 'PLATEFORME' AND deleted_at IS NULL

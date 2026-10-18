@@ -35,8 +35,8 @@ function buildTransport() {
 
 export async function envoyerMail(params: SendMailParams) {
   const transport = buildTransport();
-  const from = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USERNAME || 'no-reply@academia.local';
-  const fromName = process.env.MAIL_FROM_NAME || 'Academia';
+  const from = process.env.MAIL_FROM_ADDRESS || process.env.MAIL_USERNAME || 'no-reply@eduplex.local';
+  const fromName = process.env.MAIL_FROM_NAME || 'Eduplex';
 
   await transport.sendMail({
     from: `${fromName} <${from}>`,

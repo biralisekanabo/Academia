@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import "./../globals.css";
 import { FournisseurRequetes } from "@/composants/partages/fournisseur-requetes";
 import { FournisseurIntl } from "@/composants/partages/fournisseur-intl";
+import { InviteMiseAJour } from "@/composants/partages/invite-mise-a-jour";
 import { ServiceWorker } from "@/composants/partages/service-worker";
 import { FournisseurConfirmation } from "@/composants/ui/confirmation";
 import { FournisseurToasts } from "@/composants/ui/toaster";
@@ -14,24 +15,24 @@ import messagesEn from "../../../messages/en.json";
 import messagesFr from "../../../messages/fr.json";
 
 const DESCRIPTION =
-  "Plateforme de gestion universitaire Academia : académique, finances, caisse, comptabilité et rapports.";
+  "Plateforme de gestion universitaire Eduplex : académique, finances, caisse, comptabilité et rapports.";
 
 export const metadata: Metadata = {
-  title: { default: "Academia", template: "%s · Academia" },
+  title: { default: "Eduplex", template: "%s · Eduplex" },
   description: DESCRIPTION,
-  applicationName: "Academia",
+  applicationName: "Eduplex",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Academia",
+    title: "Eduplex",
     statusBarStyle: "black-translucent",
   },
   formatDetection: { telephone: false },
   openGraph: {
     type: "website",
-    title: "Academia",
+    title: "Eduplex",
     description: DESCRIPTION,
-    siteName: "Academia",
+    siteName: "Eduplex",
   },
   icons: {
     icon: "/icones/icon-192.png",
@@ -69,13 +70,15 @@ export default async function LayoutRacine({
 
   setRequestLocale(locale);
 
+  const versionDeploiement = process.env.VERCEL_GIT_COMMIT_SHA ?? "dev";
+
   return (
     <html lang={locale} className="dark h-full antialiased" suppressHydrationWarning>
       <body className="min-h-full font-sans">
         <script
           dangerouslySetInnerHTML={{
             __html:
-              "try{var p=localStorage.getItem('academia-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
+              "try{var p=localStorage.getItem('eduplex-theme');var d=p==='dark'||((p!=='light')&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}",
           }}
         />
         <FournisseurIntl
@@ -88,6 +91,7 @@ export default async function LayoutRacine({
             </FournisseurToasts>
           </FournisseurRequetes>
           <ServiceWorker />
+          <InviteMiseAJour versionInitiale={versionDeploiement} />
         </FournisseurIntl>
       </body>
     </html>

@@ -1,6 +1,6 @@
-/* Service Worker ACADEMIA — notifications Web Push (app fermée) + installation PWA. */
+/* Service Worker EDUPLEX — notifications Web Push (app fermée) + installation PWA. */
 
-const CACHE = "academia-v1";
+const CACHE = "eduplex-v1";
 
 self.addEventListener("install", (evenement) => {
   evenement.waitUntil(
@@ -23,10 +23,17 @@ self.addEventListener("activate", (evenement) => {
   );
 });
 
+/* --- Message depuis la page : activer tout de suite la nouvelle version --- */
+self.addEventListener("message", (evenement) => {
+  if (evenement.data && evenement.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
 /* --- Réception d'une notification poussée depuis le serveur --- */
 self.addEventListener("push", (evenement) => {
   let donnees = {
-    titre: "Academia",
+    titre: "Eduplex",
     message: "Nouvelle notification",
     lien: "/accueil",
     type: "info",
@@ -43,7 +50,7 @@ self.addEventListener("push", (evenement) => {
     icon: "/icones/icon-192.png",
     badge: "/icones/badge-96.png",
     image: donnees.image || undefined,
-    tag: donnees.lien || "academia",
+    tag: donnees.lien || "eduplex",
     renotify: true,
     data: { url: donnees.lien || "/accueil" },
     vibrate: [80, 40, 80],
@@ -51,7 +58,7 @@ self.addEventListener("push", (evenement) => {
   };
 
   evenement.waitUntil(
-    self.registration.showNotification(donnees.titre || "Academia", options)
+    self.registration.showNotification(donnees.titre || "Eduplex", options)
   );
 });
 

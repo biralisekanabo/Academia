@@ -1,5 +1,5 @@
 -- ============================================================
--- ACADEMIA · Réinitialisation de la base (schéma public)
+-- EDUPLEX · Réinitialisation de la base (schéma public)
 -- ATTENTION : supprime TOUTES les données de l'application
 -- (entreprises, utilisateurs, étudiants, finances, comptabilité...).
 -- À exécuter UNIQUEMENT lors d'une remise à zéro / d'un setup.

@@ -1,5 +1,5 @@
 -- ============================================================
--- ACADEMIA · Nettoyage de l'ancienne base (schéma openlu_*)
+-- EDUPLEX · Nettoyage de l'ancienne base (schéma openlu_*)
 -- Idempotent : supprime tous les objets de l'ancienne application
 -- (tables, vues, fonctions, types, politiques RLS).
 -- À exécuter EN PREMIER, avant les migrations 0001 → 0008.

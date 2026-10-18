@@ -43,3 +43,18 @@ next-env.d.ts
 # backups
 *.bak
 
+# capacitor / android
+/android/.gradle
+/android/build
+/android/app/build
+/android/capacitor-cordova-android-plugins/build
+/android/local.properties
+/android/keystore.properties
+/android/*.jks
+/android/*.keystore
+/android/.idea
+
+# electron / builds
+/electron-dist
+/dist-electron
+

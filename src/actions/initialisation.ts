@@ -50,8 +50,8 @@ export async function creerSuperAdminInitial(donnees: {
     const { data: cree, error } = await client
       .from("entreprises")
       .insert({
-        nom: "Plateforme Academia",
-        sigle: "ACADEMIA",
+        nom: "Plateforme Eduplex",
+        sigle: "EDUPLEX",
         type_entreprise: "PLATEFORME",
         statut: "ACTIVE",
       })

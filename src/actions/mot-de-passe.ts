@@ -71,7 +71,7 @@ export async function demanderReinitialisation(emailOuIdentifiant: string): Prom
       text: `${t("votreCodeEst")} ${code}. ${t("codeExpire15min")}`,
       html: `<p>${t("votreCodeEst")} <strong>${code}</strong>.</p><p>${t("codeExpire15min")}</p>`,
     });
-  } catch (e) {
+  } catch {
     // ignore
   }
 

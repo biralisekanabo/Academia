@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { BoutonTelechargerApp } from "@/composants/partages/bouton-telecharger-app";
 import { Logo } from "@/composants/partages/logo";
 import { SelecteurLangue } from "@/composants/partages/selecteur-langue";
 import { Link, usePathname } from "@/i18n/navigation";
@@ -103,12 +104,13 @@ export function SidebarPortail({
         </nav>
 
         <div className="border-t p-4">
+          <BoutonTelechargerApp className="mb-3 w-full justify-center" />
           <div className="flex items-center gap-2 rounded-xl bg-sidebar-accent/50 px-3 py-2">
             <span className="relative flex size-2">
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            <p className="text-xs font-medium text-muted-foreground">ACADEMIA · v0.1</p>
+            <p className="text-xs font-medium text-muted-foreground">EDUPLEX · v0.1</p>
           </div>
           <div className="mt-3 flex justify-center border-t pt-3 md:hidden">
             <SelecteurLangue />

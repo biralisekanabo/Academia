@@ -14,7 +14,7 @@ import { Etiquette } from "@/composants/ui/etiquette";
 import { Saisie } from "@/composants/ui/saisie";
 import { useToast } from "@/composants/ui/toaster";
 import { cheminApresConnexion } from "@/constantes/navigation-portail";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 
 type Donnees = { identifiant: string; motDePasse: string };
 
@@ -112,9 +112,12 @@ export function FormulaireConnexion() {
       </Bouton>
 
       <div className="text-center">
-        <a href="/connexion/mot-de-passe-oublie" className="text-sm text-brand-2 hover:underline">
+        <Link
+          href="/connexion/mot-de-passe-oublie"
+          className="text-sm text-brand-2 hover:underline"
+        >
           {t("motDePasseOublie")}
-        </a>
+        </Link>
       </div>
     </form>
   );
