@@ -10,6 +10,7 @@ import {
 } from "@/actions/etablissements";
 import { Insigne } from "@/composants/ui/insigne";
 import { Link } from "@/i18n/navigation";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import {
   Tableau,
@@ -155,13 +156,17 @@ function BoutonSupprimer({
   onFait: () => void;
 }) {
   const t = useTranslations();
+  const { confirmer } = useConfirmation();
   return (
     <button
       type="button"
-      onClick={() => {
-        if (window.confirm(t("etablissements.confirmerSuppression", { nom }))) {
-          onFait();
-        }
+      onClick={async () => {
+        const ok = await confirmer({
+          titre: t("commun.supprimer"),
+          message: t("etablissements.confirmerSuppression", { nom }),
+          variante: "destructive",
+        });
+        if (ok) onFait();
       }}
       className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
       aria-label={t("commun.supprimer")}

@@ -35,6 +35,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type { Devise, TauxChange } from "@/types/base";
 
@@ -47,6 +48,7 @@ export function GestionMonnaies({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [formDevise, setFormDevise] = useState<Devise | null | undefined>(undefined);
   const [formTaux, setFormTaux] = useState(false);
@@ -151,8 +153,13 @@ export function GestionMonnaies({
                       </button>
                       <button
                         disabled={enCours || d.est_reference}
-                        onClick={() => {
-                          if (!window.confirm(t("monnaies.confirmerSuppression", { nom: d.nom }))) return;
+                        onClick={async () => {
+                          const ok = await confirmer({
+                            titre: t("commun.supprimer"),
+                            message: t("monnaies.confirmerSuppression", { nom: d.nom }),
+                            variante: "destructive",
+                          });
+                          if (!ok) return;
                           demarrer(async () => {
                             const r = await supprimerDevise(d.id);
                             if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

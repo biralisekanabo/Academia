@@ -22,6 +22,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type { Permission, Role } from "@/types/base";
 
@@ -36,6 +37,7 @@ export function GestionRoles({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
 
   const [roleForm, setRoleForm] = useState<Role | null | undefined>(undefined);
@@ -50,8 +52,13 @@ export function GestionRoles({
     return [...map.entries()];
   }, [permissions]);
 
-  function supprimer(role: Role) {
-    if (!window.confirm(t("roles.confirmerSuppression", { nom: role.nom }))) return;
+  async function supprimer(role: Role) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("roles.confirmerSuppression", { nom: role.nom }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerRole(role.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

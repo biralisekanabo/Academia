@@ -123,7 +123,22 @@
     "initDejaFait": "La plateforme est déjà initialisée.",
     "initErreur": "Impossible de créer le compte administrateur.",
     "initReussie": "Super administrateur créé. Connectez-vous.",
-    "serviceDejaUtilise": "Cet identifiant est déjà utilisé."
+    "serviceDejaUtilise": "Cet identifiant est déjà utilisé.",
+    "motDePasseOublie": "Mot de passe oublié ?",
+    "saisirIdentifiantPourCode": "Saisissez votre identifiant ou votre email pour recevoir un code de vérification.",
+    "envoyerCode": "Envoyer le code",
+    "codeOtp": "Code de vérification",
+    "codeEnvoye": "Un code de vérification vous a été envoyé par email.",
+    "codeEnvoyeSujet": "Votre code de réinitialisation",
+    "votreCodeEst": "Votre code de réinitialisation est",
+    "codeExpire15min": "Ce code expire dans 15 minutes.",
+    "nouveauMotDePasse": "Nouveau mot de passe",
+    "confirmerMotDePasse": "Confirmer le mot de passe",
+    "reinitialiser": "Réinitialiser le mot de passe",
+    "motDePasseMisAJour": "Votre mot de passe a été mis à jour.",
+    "codeInvalide": "Code invalide ou expiré.",
+    "motsDePasseNonIdentiques": "Les mots de passe ne correspondent pas.",
+    "motDePasseTropCourt": "Le mot de passe doit contenir au moins 6 caractères."
   },
   "commun": {
     "chargement": "Chargement…",

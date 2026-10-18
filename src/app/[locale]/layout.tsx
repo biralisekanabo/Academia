@@ -7,6 +7,7 @@ import "./../globals.css";
 import { FournisseurRequetes } from "@/composants/partages/fournisseur-requetes";
 import { FournisseurIntl } from "@/composants/partages/fournisseur-intl";
 import { ServiceWorker } from "@/composants/partages/service-worker";
+import { FournisseurConfirmation } from "@/composants/ui/confirmation";
 import { FournisseurToasts } from "@/composants/ui/toaster";
 import { configuration } from "@/i18n/configuration";
 import messagesEn from "../../../messages/en.json";
@@ -82,7 +83,9 @@ export default async function LayoutRacine({
           messages={locale === "en" ? messagesEn : messagesFr}
         >
           <FournisseurRequetes>
-            <FournisseurToasts>{children}</FournisseurToasts>
+            <FournisseurToasts>
+              <FournisseurConfirmation>{children}</FournisseurConfirmation>
+            </FournisseurToasts>
           </FournisseurRequetes>
           <ServiceWorker />
         </FournisseurIntl>

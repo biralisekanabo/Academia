@@ -36,6 +36,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import { cn } from "@/utilitaires/cn";
 import type {
@@ -84,6 +85,7 @@ export function GestionFrais({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [onglet, setOnglet] = useState<Onglet>("frais");
   const [formFrais, setFormFrais] = useState<FraisAcademique | null | undefined>(undefined);
@@ -208,8 +210,13 @@ export function GestionFrais({
                         </button>
                         <button
                           disabled={enCours}
-                          onClick={() => {
-                            if (!window.confirm(t("frais.confirmerSuppression", { libelle: f.libelle }))) return;
+                          onClick={async () => {
+                            const ok = await confirmer({
+                              titre: t("commun.supprimer"),
+                              message: t("frais.confirmerSuppression", { libelle: f.libelle }),
+                              variante: "destructive",
+                            });
+                            if (!ok) return;
                             demarrer(async () => {
                               const r = await supprimerFrais(f.id);
                               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -321,6 +328,7 @@ function LigneDetteRow({
   onAnnuler: () => void;
 }) {
   const t = useTranslations();
+  const { confirmer } = useConfirmation();
   const [remise, setRemise] = useState(false);
 
   return (
@@ -355,8 +363,13 @@ function LigneDetteRow({
           </button>
           <button
             disabled={enCours || dette.statut === "ANNULEE" || dette.montant_paye > 0}
-            onClick={() => {
-              if (!window.confirm(t("frais.confirmerAnnulation"))) return;
+            onClick={async () => {
+              const ok = await confirmer({
+                titre: t("commun.confirmer"),
+                message: t("frais.confirmerAnnulation"),
+                variante: "destructive",
+              });
+              if (!ok) return;
               onAnnuler();
             }}
             className="grid size-8 place-items-center rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-40 [&_svg]:size-4"

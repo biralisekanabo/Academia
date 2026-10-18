@@ -41,6 +41,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import { cn } from "@/utilitaires/cn";
 import type {
@@ -116,12 +117,18 @@ export function GestionAcademique({
 function TableauAnnees({ annees }: { annees: AnneeAcademique[] }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<AnneeAcademique | null>(null);
 
-  function supprimer(a: AnneeAcademique) {
-    if (!window.confirm(t("academique.confirmerSuppression", { nom: a.libelle }))) return;
+  async function supprimer(a: AnneeAcademique) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("academique.confirmerSuppression", { nom: a.libelle }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerAnnee(a.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -259,6 +266,7 @@ function FormulaireAnnee({
 function TableauFacultes({ facultes }: { facultes: Faculte[] }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<Faculte | null>(null);
@@ -291,8 +299,13 @@ function TableauFacultes({ facultes }: { facultes: Faculte[] }) {
                 <TableauCellule className="text-right">
                   <BoutonsLigne
                     onModifier={() => { setEdition(f); setOuvert(true); }}
-                    onSupprimer={() => {
-                      if (!window.confirm(t("academique.confirmerSuppression", { nom: f.nom }))) return;
+                    onSupprimer={async () => {
+                      const ok = await confirmer({
+                        titre: t("commun.supprimer"),
+                        message: t("academique.confirmerSuppression", { nom: f.nom }),
+                        variante: "destructive",
+                      });
+                      if (!ok) return;
                       demarrer(async () => {
                         const r = await supprimerFaculte(f.id);
                         if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -363,6 +376,7 @@ function FormulaireFaculte({
 function TableauDomaines({ facultes, domaines }: { facultes: Faculte[]; domaines: Domaine[] }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<Domaine | null>(null);
@@ -401,8 +415,13 @@ function TableauDomaines({ facultes, domaines }: { facultes: Faculte[]; domaines
                 <TableauCellule className="text-right">
                   <BoutonsLigne
                     onModifier={() => { setEdition(d); setOuvert(true); }}
-                    onSupprimer={() => {
-                      if (!window.confirm(t("academique.confirmerSuppression", { nom: d.nom }))) return;
+                    onSupprimer={async () => {
+                      const ok = await confirmer({
+                        titre: t("commun.supprimer"),
+                        message: t("academique.confirmerSuppression", { nom: d.nom }),
+                        variante: "destructive",
+                      });
+                      if (!ok) return;
                       demarrer(async () => {
                         const r = await supprimerDomaine(d.id);
                         if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -490,6 +509,7 @@ function TableauPromotions({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<Promotion | null>(null);
@@ -528,8 +548,13 @@ function TableauPromotions({
                 <TableauCellule className="text-right">
                   <BoutonsLigne
                     onModifier={() => { setEdition(p); setOuvert(true); }}
-                    onSupprimer={() => {
-                      if (!window.confirm(t("academique.confirmerSuppression", { nom: p.nom }))) return;
+                    onSupprimer={async () => {
+                      const ok = await confirmer({
+                        titre: t("commun.supprimer"),
+                        message: t("academique.confirmerSuppression", { nom: p.nom }),
+                        variante: "destructive",
+                      });
+                      if (!ok) return;
                       demarrer(async () => {
                         const r = await supprimerPromotion(p.id);
                         if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

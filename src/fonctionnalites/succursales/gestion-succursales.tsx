@@ -22,6 +22,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type { Entreprise } from "@/types/base";
 
@@ -42,6 +43,7 @@ export function GestionSuccursales({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
   const [edition, setEdition] = useState<Entreprise | null>(null);
@@ -67,8 +69,13 @@ export function GestionSuccursales({
     });
   }
 
-  function supprimer(s: Entreprise) {
-    if (!window.confirm(t("succursales.confirmerSuppression", { nom: s.nom }))) return;
+  async function supprimer(s: Entreprise) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("succursales.confirmerSuppression", { nom: s.nom }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerSuccursale(s.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

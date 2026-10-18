@@ -35,6 +35,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type { Role, Utilisateur } from "@/types/base";
 
@@ -61,6 +62,7 @@ export function GestionUtilisateurs({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
 
   const [recherche, setRecherche] = useState("");
@@ -102,9 +104,13 @@ export function GestionUtilisateurs({
     });
   }
 
-  function supprimer(u: UtilisateurListe) {
-    if (!window.confirm(t("utilisateurs.confirmerSuppression", { nom: u.nom_complet })))
-      return;
+  async function supprimer(u: UtilisateurListe) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("utilisateurs.confirmerSuppression", { nom: u.nom_complet }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerUtilisateur(u.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

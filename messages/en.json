@@ -123,7 +123,22 @@
     "initDejaFait": "The platform is already initialized.",
     "initErreur": "Unable to create the administrator account.",
     "initReussie": "Super administrator created. Please sign in.",
-    "serviceDejaUtilise": "This username is already used."
+    "serviceDejaUtilise": "This username is already used.",
+    "motDePasseOublie": "Forgot your password?",
+    "saisirIdentifiantPourCode": "Enter your username or email to receive a verification code.",
+    "envoyerCode": "Send code",
+    "codeOtp": "Verification code",
+    "codeEnvoye": "A verification code has been sent to your email.",
+    "codeEnvoyeSujet": "Your reset code",
+    "votreCodeEst": "Your reset code is",
+    "codeExpire15min": "This code expires in 15 minutes.",
+    "nouveauMotDePasse": "New password",
+    "confirmerMotDePasse": "Confirm password",
+    "reinitialiser": "Reset password",
+    "motDePasseMisAJour": "Your password has been updated.",
+    "codeInvalide": "Invalid or expired code.",
+    "motsDePasseNonIdentiques": "Passwords do not match.",
+    "motDePasseTropCourt": "Password must be at least 6 characters."
   },
   "commun": {
     "chargement": "Loading…",

@@ -20,12 +20,17 @@ export type ElementPortail = {
   icone: LucideIcon;
   roles?: string[];
   permission?: string;
+  /** Réservé au périmètre plateforme (super administrateur). */
+  plateforme?: boolean;
+  /** Accessible à tous les rôles du périmètre établissement. */
+  toujours?: boolean;
 };
 
 const ACCUEIL: ElementPortail = {
   titreCle: "navigation.accueil",
   lien: "/accueil",
   icone: Home,
+  toujours: true,
 };
 
 // --- Plateforme (super admin) ---------------------------------
@@ -35,6 +40,7 @@ const ETABLISSEMENTS: ElementPortail = {
   lien: "/etablissements",
   icone: Building2,
   roles: ["SUPER_ADMIN"],
+  plateforme: true,
 };
 
 const UTILISATEURS_PLATEFORME: ElementPortail = {
@@ -42,6 +48,7 @@ const UTILISATEURS_PLATEFORME: ElementPortail = {
   lien: "/utilisateurs-plateforme",
   icone: Users,
   roles: ["SUPER_ADMIN"],
+  plateforme: true,
 };
 
 // --- Établissement --------------------------------------------
@@ -133,6 +140,7 @@ const PROFIL: ElementPortail = {
   titreCle: "navigation.profil",
   lien: "/profil",
   icone: Users,
+  toujours: true,
 };
 
 // --- Composition ----------------------------------------------
@@ -155,7 +163,13 @@ const TOUS: ElementPortail[] = [
   PROFIL,
 ];
 
-/** Navigation filtrée selon les rôles et permissions effectives. */
+/**
+ * Navigation filtrée selon les rôles et permissions effectives.
+ *
+ * Le super administrateur n'intervient que sur le périmètre plateforme
+ * (gestion des établissements et de leurs accès) : il ne voit donc pas les
+ * modules métier propres aux établissements.
+ */
 export function navigationPour(
   roles: string[],
   permissions: string[] = []
@@ -163,11 +177,18 @@ export function navigationPour(
   const superAdmin = roles.includes("SUPER_ADMIN");
   const jeu = new Set(permissions);
 
+  if (superAdmin) {
+    return TOUS.filter((element) => element.plateforme || element.toujours);
+  }
+
   return TOUS.filter((element) => {
+    if (element.plateforme) {
+      return false;
+    }
     if (element.roles && !element.roles.some((r) => roles.includes(r))) {
       return false;
     }
-    if (element.permission && !superAdmin && !jeu.has(element.permission)) {
+    if (element.permission && !jeu.has(element.permission)) {
       return false;
     }
     return true;

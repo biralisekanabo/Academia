@@ -23,6 +23,7 @@ import {
   validerEcriture,
 } from "@/actions/comptabilite";
 import { Modale } from "@/composants/partages/modale";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import { cn } from "@/utilitaires/cn";
 import {
@@ -60,6 +61,7 @@ export function GestionComptabilite({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [onglet, setOnglet] = useState<Onglet>("comptes");
   const [formCompte, setFormCompte] = useState<CompteComptable | null | undefined>(undefined);
@@ -109,8 +111,13 @@ export function GestionComptabilite({
               toasts.succes(t("toasts.succes"), t("comptabilite.statutMaj"));
             })
           }
-          onSupprimer={(c) => {
-            if (!window.confirm(t("comptabilite.confirmerSuppression", { code: c.code }))) return;
+          onSupprimer={async (c) => {
+            const ok = await confirmer({
+              titre: t("commun.supprimer"),
+              message: t("comptabilite.confirmerSuppression", { code: c.code }),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await supprimerCompte(c.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -126,8 +133,13 @@ export function GestionComptabilite({
           enCours={enCours}
           onNouveau={() => setFormJournal(null)}
           onEditer={(j) => setFormJournal(j)}
-          onSupprimer={(j) => {
-            if (!window.confirm(t("comptabilite.confirmerSuppression", { code: j.code }))) return;
+          onSupprimer={async (j) => {
+            const ok = await confirmer({
+              titre: t("commun.supprimer"),
+              message: t("comptabilite.confirmerSuppression", { code: j.code }),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await supprimerJournal(j.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -151,8 +163,13 @@ export function GestionComptabilite({
               toasts.succes(t("toasts.succes"), t("comptabilite.ecritureValidee"));
             })
           }
-          onContrePasser={(e) => {
-            if (!window.confirm(t("comptabilite.confirmerContrePassation"))) return;
+          onContrePasser={async (e) => {
+            const ok = await confirmer({
+              titre: t("commun.confirmer"),
+              message: t("comptabilite.confirmerContrePassation"),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await contrePasserEcriture(e.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

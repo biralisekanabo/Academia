@@ -22,6 +22,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type {
   AnneeAcademique,
@@ -57,6 +58,7 @@ export function GestionInscriptions({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [ouvert, setOuvert] = useState(false);
 
@@ -68,8 +70,13 @@ export function GestionInscriptions({
     });
   }
 
-  function supprimer(i: LigneInscription) {
-    if (!window.confirm(t("inscriptions.confirmerSuppression", { numero: i.numero_inscription }))) return;
+  async function supprimer(i: LigneInscription) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("inscriptions.confirmerSuppression", { numero: i.numero_inscription }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerInscription(i.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

@@ -15,6 +15,7 @@ import {
 import { annulerMouvement, creerMouvement } from "@/actions/mouvements";
 import { annulerPaiement, enregistrerPaiement } from "@/actions/paiements";
 import { Modale } from "@/composants/partages/modale";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import { cn } from "@/utilitaires/cn";
 import type {
@@ -67,6 +68,7 @@ export function GestionCaisse({
 }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [onglet, setOnglet] = useState<Onglet>("caisses");
   const [formCaisse, setFormCaisse] = useState<Caisse | null | undefined>(undefined);
@@ -136,8 +138,13 @@ export function GestionCaisse({
               toasts.succes(t("toasts.succes"), t("caisse.statutMaj"));
             })
           }
-          surSupprimer={(c) => {
-            if (!window.confirm(t("caisse.confirmerSuppression", { nom: c.nom }))) return;
+          surSupprimer={async (c) => {
+            const ok = await confirmer({
+              titre: t("commun.supprimer"),
+              message: t("caisse.confirmerSuppression", { nom: c.nom }),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await supprimerCaisse(c.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -162,8 +169,13 @@ export function GestionCaisse({
           codes={codes}
           enCours={enCours}
           surNouveau={() => setFormMouvement(true)}
-          surAnnuler={(m) => {
-            if (!window.confirm(t("caisse.confirmerAnnulation"))) return;
+          surAnnuler={async (m) => {
+            const ok = await confirmer({
+              titre: t("commun.confirmer"),
+              message: t("caisse.confirmerAnnulation"),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await annulerMouvement(m.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
@@ -182,8 +194,13 @@ export function GestionCaisse({
           enCours={enCours}
           pret={peutEncaisser}
           surNouveau={() => setFormPaiement(true)}
-          surAnnuler={(p) => {
-            if (!window.confirm(t("caisse.confirmerAnnulation"))) return;
+          surAnnuler={async (p) => {
+            const ok = await confirmer({
+              titre: t("commun.confirmer"),
+              message: t("caisse.confirmerAnnulation"),
+              variante: "destructive",
+            });
+            if (!ok) return;
             demarrer(async () => {
               const r = await annulerPaiement(p.id);
               if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);

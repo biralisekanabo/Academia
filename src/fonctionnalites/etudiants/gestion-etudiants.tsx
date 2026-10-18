@@ -38,6 +38,7 @@ import {
   TableauEnteteCellule,
   TableauLigne,
 } from "@/composants/ui/tableau";
+import { useConfirmation } from "@/composants/ui/confirmation";
 import { useToast } from "@/composants/ui/toaster";
 import type { Etudiant } from "@/types/base";
 
@@ -46,6 +47,7 @@ const TYPES_PIECE = ["CNI", "PASSEPORT", "PAROISSE", "AUTRE"];
 export function GestionEtudiants({ etudiants }: { etudiants: Etudiant[] }) {
   const t = useTranslations();
   const toasts = useToast();
+  const { confirmer } = useConfirmation();
   const [enCours, demarrer] = useTransition();
   const [recherche, setRecherche] = useState("");
   const [ouvert, setOuvert] = useState(false);
@@ -61,8 +63,13 @@ export function GestionEtudiants({ etudiants }: { etudiants: Etudiant[] }) {
     );
   }, [etudiants, recherche]);
 
-  function supprimer(e: Etudiant) {
-    if (!window.confirm(t("etudiants.confirmerSuppression", { nom: `${e.nom} ${e.prenom}` }))) return;
+  async function supprimer(e: Etudiant) {
+    const ok = await confirmer({
+      titre: t("commun.supprimer"),
+      message: t("etudiants.confirmerSuppression", { nom: `${e.nom} ${e.prenom}` }),
+      variante: "destructive",
+    });
+    if (!ok) return;
     demarrer(async () => {
       const r = await supprimerEtudiant(e.id);
       if (r.erreur) return toasts.erreur(t("toasts.erreur"), r.erreur);
