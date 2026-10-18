@@ -1,0 +1,117 @@
+﻿Ôû▓ Next.js 16.4.0 (Turbopack)
+- Environments: .env
+Ô£ô Running next.config.ts took 137ms
+- Cache Components enabled
+- Partial Prefetching enabled
+- Experiments (use with caution):
+  ┬À serverActions
+
+  Creating an optimized production build ...
+Ô£ô Compiled successfully in 6.6s
+  Running TypeScript ...
+  Finished TypeScript in 8.9s ...
+  Collecting page data using 3 workers ...
+  Generating static pages using 3 workers (0/69) ...
+  Generating static pages using 3 workers (17/69) 
+  Generating static pages using 3 workers (34/69) 
+  Generating static pages using 3 workers (51/69) 
+Ô£ô Generating static pages using 3 workers (69/69) in 6.3s
+  Finalizing page optimization ...
+
+Route (app)
+Ôöî Ôùï /_not-found
+Ôö£   /[locale]
+Ôöé Ôö£ ÔùÉ /[locale]
+Ôöé Ôö£ ÔùÉ /fr
+Ôöé Ôöö ÔùÉ /en
+Ôö£   /[locale]/academique
+Ôöé Ôö£ ÔùÉ /[locale]/academique
+Ôöé Ôö£ ÔùÉ /fr/academique
+Ôöé Ôöö ÔùÉ /en/academique
+Ôö£   /[locale]/accueil
+Ôöé Ôö£ ÔùÉ /[locale]/accueil
+Ôöé Ôö£ ÔùÉ /fr/accueil
+Ôöé Ôöö ÔùÉ /en/accueil
+Ôö£   /[locale]/caisse
+Ôöé Ôö£ ÔùÉ /[locale]/caisse
+Ôöé Ôö£ ÔùÉ /fr/caisse
+Ôöé Ôöö ÔùÉ /en/caisse
+Ôö£   /[locale]/comptabilite
+Ôöé Ôö£ ÔùÉ /[locale]/comptabilite
+Ôöé Ôö£ ÔùÉ /fr/comptabilite
+Ôöé Ôöö ÔùÉ /en/comptabilite
+Ôö£   /[locale]/connexion
+Ôöé Ôö£ ÔùÉ /[locale]/connexion
+Ôöé Ôö£ ÔùÉ /fr/connexion
+Ôöé Ôöö ÔùÉ /en/connexion
+Ôö£   /[locale]/etablissements
+Ôöé Ôö£ ÔùÉ /[locale]/etablissements
+Ôöé Ôö£ ÔùÉ /fr/etablissements
+Ôöé Ôöö ÔùÉ /en/etablissements
+Ôö£   /[locale]/etablissements/[id]
+Ôöé Ôö£ ÔùÉ /[locale]/etablissements/[id]
+Ôöé Ôö£ ÔùÉ /fr/etablissements/[id]
+Ôöé Ôöö ÔùÉ /en/etablissements/[id]
+Ôö£   /[locale]/etablissements/nouveau
+Ôöé Ôö£ ÔùÉ /[locale]/etablissements/nouveau
+Ôöé Ôö£ ÔùÉ /fr/etablissements/nouveau
+Ôöé Ôöö ÔùÉ /en/etablissements/nouveau
+Ôö£   /[locale]/etudiants
+Ôöé Ôö£ ÔùÉ /[locale]/etudiants
+Ôöé Ôö£ ÔùÉ /fr/etudiants
+Ôöé Ôöö ÔùÉ /en/etudiants
+Ôö£   /[locale]/frais
+Ôöé Ôö£ ÔùÉ /[locale]/frais
+Ôöé Ôö£ ÔùÉ /fr/frais
+Ôöé Ôöö ÔùÉ /en/frais
+Ôö£   /[locale]/impression/rapport/[type]
+Ôöé Ôö£ ÔùÉ /[locale]/impression/rapport/[type]
+Ôöé Ôö£ ÔùÉ /fr/impression/rapport/[type]
+Ôöé Ôöö ÔùÉ /en/impression/rapport/[type]
+Ôö£   /[locale]/impression/recu/[id]
+Ôöé Ôö£ ÔùÉ /[locale]/impression/recu/[id]
+Ôöé Ôö£ ÔùÉ /fr/impression/recu/[id]
+Ôöé Ôöö ÔùÉ /en/impression/recu/[id]
+Ôö£   /[locale]/initialisation
+Ôöé Ôö£ ÔùÉ /[locale]/initialisation
+Ôöé Ôö£ ÔùÉ /fr/initialisation
+Ôöé Ôöö ÔùÉ /en/initialisation
+Ôö£   /[locale]/inscriptions
+Ôöé Ôö£ ÔùÉ /[locale]/inscriptions
+Ôöé Ôö£ ÔùÉ /fr/inscriptions
+Ôöé Ôöö ÔùÉ /en/inscriptions
+Ôö£   /[locale]/monnaies
+Ôöé Ôö£ ÔùÉ /[locale]/monnaies
+Ôöé Ôö£ ÔùÉ /fr/monnaies
+Ôöé Ôöö ÔùÉ /en/monnaies
+Ôö£   /[locale]/profil
+Ôöé Ôö£ ÔùÉ /[locale]/profil
+Ôöé Ôö£ ÔùÉ /fr/profil
+Ôöé Ôöö ÔùÉ /en/profil
+Ôö£   /[locale]/rapports
+Ôöé Ôö£ ÔùÉ /[locale]/rapports
+Ôöé Ôö£ ÔùÉ /fr/rapports
+Ôöé Ôöö ÔùÉ /en/rapports
+Ôö£   /[locale]/roles
+Ôöé Ôö£ ÔùÉ /[locale]/roles
+Ôöé Ôö£ ÔùÉ /fr/roles
+Ôöé Ôöö ÔùÉ /en/roles
+Ôö£   /[locale]/succursales
+Ôöé Ôö£ ÔùÉ /[locale]/succursales
+Ôöé Ôö£ ÔùÉ /fr/succursales
+Ôöé Ôöö ÔùÉ /en/succursales
+Ôö£   /[locale]/utilisateurs
+Ôöé Ôö£ ÔùÉ /[locale]/utilisateurs
+Ôöé Ôö£ ÔùÉ /fr/utilisateurs
+Ôöé Ôöö ÔùÉ /en/utilisateurs
+Ôöö   /[locale]/utilisateurs-plateforme
+  Ôö£ ÔùÉ /[locale]/utilisateurs-plateforme
+  Ôö£ ÔùÉ /fr/utilisateurs-plateforme
+  Ôöö ÔùÉ /en/utilisateurs-plateforme
+
+
+ãÆ Proxy (Middleware)
+
+Ôùï  (Static)             prerendered as static content
+ÔùÉ  (Partial Prerender)  prerendered as static HTML with dynamic server-streamed content
+

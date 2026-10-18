@@ -61,10 +61,7 @@ export function FormulaireConnexion() {
   return (
     <form onSubmit={soumettre} className="space-y-5" noValidate>
       {errors.root && (
-        <p
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
-        >
+        <p role="alert" className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {errors.root.message}
         </p>
       )}
@@ -82,13 +79,9 @@ export function FormulaireConnexion() {
           />
         </ChampAuth>
         {errors.identifiant ? (
-          <p className="text-sm text-destructive">
-            {errors.identifiant.message}
-          </p>
+          <p className="text-sm text-destructive">{errors.identifiant.message}</p>
         ) : (
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            {t("identifiantAide")}
-          </p>
+          <p className="text-xs leading-relaxed text-muted-foreground">{t("identifiantAide")}</p>
         )}
       </div>
 
@@ -98,17 +91,14 @@ export function FormulaireConnexion() {
           <Saisie
             id="motDePasse"
             type="password"
+            placeholder="••••••••"
             autoComplete="current-password"
             aria-invalid={!!errors.motDePasse}
             className="h-11 rounded-xl pl-11"
             {...register("motDePasse")}
           />
         </ChampAuth>
-        {errors.motDePasse && (
-          <p className="text-sm text-destructive">
-            {errors.motDePasse.message}
-          </p>
-        )}
+        {errors.motDePasse && <p className="text-sm text-destructive">{errors.motDePasse.message}</p>}
       </div>
 
       <Bouton
@@ -118,8 +108,14 @@ export function FormulaireConnexion() {
         className="degrade-brand mt-1 h-11 w-full rounded-xl border-0 text-white shadow-lg shadow-brand-1/20 hover:opacity-90 hover:brightness-105"
       >
         {enCours && <LoaderCircle className="animate-spin" aria-hidden="true" />}
-        <span>{enCours ? t("enCours") : t("seConnecter")}</span>
+        {t("seConnecter")}
       </Bouton>
+
+      <div className="text-center">
+        <a href="/connexion/mot-de-passe-oublie" className="text-sm text-brand-2 hover:underline">
+          {t("motDePasseOublie")}
+        </a>
+      </div>
     </form>
   );
 }
